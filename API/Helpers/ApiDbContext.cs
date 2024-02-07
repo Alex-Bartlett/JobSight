@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JobSightLib.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace API.Models
+namespace API.Helpers
 {
     public class ApiDbContext : DbContext
     {

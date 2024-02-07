@@ -25,7 +25,11 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="Models\DTOs\" />
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobSightLib\JobSightLib.csproj" />
   </ItemGroup>
 
 </Project>
