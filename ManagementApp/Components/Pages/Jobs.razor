@@ -1,0 +1,39 @@
+﻿@page "/jobs"
+@inject IJobService jobService;
+
+<h3>Jobs</h3>
+@if (jobs == null)
+{
+    <span>Loading...</span>
+}
+else if (jobs.Count == 0)
+{
+    <span>No jobs found</span>
+}
+else
+{
+    <ul>
+        @foreach (Job job in jobs)
+        {
+            <li>@job.Id</li>
+        }
+    </ul>
+}
+
+@if (job == null)
+{
+    <span>Not found</span>
+}
+else {
+    <span>@job.Id</span>
+}
+
+@code {
+    List<Job>? jobs = null;
+    Job? job = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        job = await jobService.GetJob(1);
+    }
+}
