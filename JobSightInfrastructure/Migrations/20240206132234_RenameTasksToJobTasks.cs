@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace API.Migrations
+namespace JobSightInfrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class RenameTasksToJobTasks : Migration

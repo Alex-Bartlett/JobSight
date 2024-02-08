@@ -1,4 +1,4 @@
-﻿using JobSightLib.Models;
+﻿using Shared.Models;
 
 namespace ManagementApp.Data
 {
