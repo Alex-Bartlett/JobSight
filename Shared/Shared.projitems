@@ -18,5 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\JobTaskImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\IJobRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\JobRepository.cs" />
   </ItemGroup>
 </Project>

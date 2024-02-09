@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementApp", "Management
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{9C3714E9-A2F1-4630-93DC-E1767C1CB51E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{FA85DB54-EEB7-49FB-A59C-636B5606C104}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{FA85DB54-EEB7-49FB-A59C-636B5606C104}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,7 +32,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{9c3714e9-a2f1-4630-93dc-e1767c1cb51e}*SharedItemsImports = 13
-		Shared\Shared.projitems*{eb7168da-2622-49c5-bef5-23f6c7048668}*SharedItemsImports = 5
 		Shared\Shared.projitems*{fa85db54-eeb7-49fb-a59c-636b5606c104}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

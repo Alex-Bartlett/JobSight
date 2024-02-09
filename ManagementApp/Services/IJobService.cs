@@ -2,9 +2,9 @@
 
 namespace ManagementApp.Services
 {
-    public interface IJobService
+    public interface IJobService : ICompanySpecificService
     {
-        Task<List<Job>> GetAllJobs();
+        Task<IEnumerable<Job>> GetAllJobs();
         Task<Job> GetJob(int jobId);
     }
 }

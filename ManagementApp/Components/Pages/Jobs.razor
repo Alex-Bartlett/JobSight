@@ -6,7 +6,7 @@
 {
     <span>Loading...</span>
 }
-else if (jobs.Count == 0)
+else if (jobs.Count() == 0)
 {
     <span>No jobs found</span>
 }
@@ -29,11 +29,12 @@ else {
 }
 
 @code {
-    List<Job>? jobs = null;
+    IEnumerable<Job>? jobs = null;
     Job? job = null;
 
     protected override async Task OnInitializedAsync()
     {
+        jobs = await jobService.GetAllJobs();
         job = await jobService.GetJob(1);
     }
 }

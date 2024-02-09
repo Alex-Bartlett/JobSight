@@ -1,17 +1,27 @@
 ﻿using Shared.Models;
+using Shared.Repositories;
 
 namespace ManagementApp.Services
 {
     public class JobService : IJobService
     {
-        public Task<List<Job>> GetAllJobs()
+        private readonly IJobRepository _jobRepository;
+        public Company company { get; }
+
+        public JobService(IJobRepository jobRepository, ICompanyService company)
         {
-            throw new NotImplementedException();
+            _jobRepository = jobRepository;
+            this.company = company.Company;
         }
 
-        public Task<Job> GetJob(int jobId)
+        public async Task<IEnumerable<Job>> GetAllJobs()
         {
-            throw new NotImplementedException();
+            return await _jobRepository.GetAllJobsAsync(company.Id);
+        }
+
+        public async Task<Job> GetJob(int jobId)
+        {
+            return await _jobRepository.GetJobByIdAsync(jobId);
         }
     }
 }
