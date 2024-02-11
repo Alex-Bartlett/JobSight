@@ -6,8 +6,10 @@ namespace Shared.Models
     {
         public int Id { get; set; }
         [Required]
-        public Customer? Customer { get; set; }
+        public int CustomerId { get; set; }
         [Required]
+        public int CompanyId { get; set; }
+        public Customer? Customer { get; set; }
         public Company? Company { get; set; }
     }
 }

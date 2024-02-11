@@ -10,8 +10,10 @@ namespace Shared.Models
         public DateTime? StartDateTime { get; set; }
         public DateTime? EndDateTime { get; set; }
         [Required]
+        public int JobId { get; set; }
         public Job? Job { get; set; }
         [Required]
+        public int UserId { get; set; }
         public User? User { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace Shared.Models
         public string? Content { get; set; }
         public string? FileUrl { get; set; }
         [Required]
+        public int JobId { get; set; }
         public Job? Job { get; set; }
     }
 }
