@@ -9,7 +9,7 @@ namespace Shared.Models
         public int CustomerId { get; set; }
         [Required]
         public int CompanyId { get; set; }
-        public Customer? Customer { get; set; }
-        public Company? Company { get; set; }
+        public virtual Customer? Customer { get; set; }
+        public virtual Company? Company { get; set; }
     }
 }

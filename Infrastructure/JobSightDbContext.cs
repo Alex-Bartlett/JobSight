@@ -11,15 +11,16 @@ namespace Infrastructure
         {
         }
 
-        public DbSet<AccountTier> AccountTiers { get; set; }
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<JobNote> JobNotes { get; set; }
-        public DbSet<JobTask> JobTasks { get; set; }
-        public DbSet<JobTaskImage> JobTaskImages { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        // DbSets are virtual for mock implementations: https://learn.microsoft.com/en-gb/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN#virtual-dbset-properties-with-ef-designer
+        public virtual DbSet<AccountTier> AccountTiers { get; set; }
+        public virtual DbSet<Company> Companies { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Job> Jobs { get; set; }
+        public virtual DbSet<JobNote> JobNotes { get; set; }
+        public virtual DbSet<JobTask> JobTasks { get; set; }
+        public virtual DbSet<JobTaskImage> JobTaskImages { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         /* When you make changes, use either:
         

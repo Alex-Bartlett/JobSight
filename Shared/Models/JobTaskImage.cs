@@ -10,6 +10,6 @@ namespace Shared.Models
         public string? Caption { get; set; }
         [Required]
         public int JobTaskId { get; set; }
-        public JobTask? JobTask { get; set; }
+        public virtual JobTask? JobTask { get; set; }
     }
 }

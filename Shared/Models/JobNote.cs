@@ -10,6 +10,6 @@ namespace Shared.Models
         public string? FileUrl { get; set; }
         [Required]
         public int JobId { get; set; }
-        public Job? Job { get; set; }
+        public virtual Job? Job { get; set; }
     }
 }
