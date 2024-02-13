@@ -34,7 +34,7 @@ else {
 
     protected override async Task OnInitializedAsync()
     {
-        jobs = await jobService.GetAllJobs();
-        job = await jobService.GetJob(1);
+        jobs = await jobService.GetAllAsync();
+        job = await jobService.GetByIdAsync(1);
     }
 }
