@@ -12,8 +12,10 @@ namespace Shared.Models
         [Required]
         public string? Password { get; set; }
         [Required]
-        public Company? Company { get; set; }
+        public int CompanyId { get; set; }
         [Required]
-        public UserRole? Role { get; set; }
+        public int RoleId { get; set; }
+        public virtual Company? Company { get; set; }
+        public virtual UserRole? Role { get; set; }
     }
 }

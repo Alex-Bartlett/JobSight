@@ -9,6 +9,7 @@ namespace Shared.Models
         public string? ImageUrl { get; set; }
         public string? Caption { get; set; }
         [Required]
-        public JobTask? JobTask { get; set; }
+        public int JobTaskId { get; set; }
+        public virtual JobTask? JobTask { get; set; }
     }
 }

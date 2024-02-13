@@ -11,7 +11,8 @@ namespace Shared.Models
         public string? Email { get; set; }
         [Required]
         public string? ContactNumber { get; set; }
+        public int AccountTierId { get; set; }
         [Required]
-        public AccountTier? AccountTier { get; set; }
+        public virtual AccountTier? AccountTier { get; set; }
     }
 }
