@@ -4,6 +4,6 @@ namespace ManagementApp.Services
 {
     public interface ICompanySpecificService
     {
-        Company company { get; }
+        Company Company { get; }
     }
 }
