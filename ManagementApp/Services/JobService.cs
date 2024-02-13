@@ -14,14 +14,14 @@ namespace ManagementApp.Services
             this.company = company.Company;
         }
 
-        public async Task<IEnumerable<Job>> GetAllJobs()
+        public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            return await _jobRepository.GetAllJobsAsync(company.Id);
+            return await _jobRepository.GetAllAsync(company.Id);
         }
 
-        public async Task<Job> GetJob(int jobId)
+        public async Task<Job> GetByIdAsync(int jobId)
         {
-            return await _jobRepository.GetJobByIdAsync(jobId);
+            return await _jobRepository.GetByIdAsync(jobId);
         }
     }
 }

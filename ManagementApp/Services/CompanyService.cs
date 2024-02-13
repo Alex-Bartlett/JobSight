@@ -8,10 +8,10 @@ namespace ManagementApp.Services
 
         public CompanyService()
         {
-            Company = SetCompany();
+            Company = Set();
         }
 
-        public Company SetCompany()
+        public Company Set()
         {
             // TESTING ONLY
             return new Company()
@@ -19,7 +19,7 @@ namespace ManagementApp.Services
                 Id = 2,
                 AccountTier = new AccountTier()
                 {
-                    Id=1,
+                    Id = 1,
                 },
             };
         }

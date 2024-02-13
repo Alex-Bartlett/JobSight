@@ -7,11 +7,11 @@ namespace Shared.Repositories
 {
     public interface IJobRepository
     {
-        Task<Job> GetJobByIdAsync(int id);
-        Task<IEnumerable<Job>> GetAllJobsAsync(int companyId);
-        Task AddJobAsync(Job job);
-        Task UpdateJobAsync(Job job);
-        Task DeleteJobAsync(int id);
+        Task<Job> GetByIdAsync(int id);
+        Task<IEnumerable<Job>> GetAllAsync(int companyId);
+        Task AddAsync(Job job);
+        Task UpdateAsync(Job job);
+        Task DeleteAsync(int id);
 
     }
 }

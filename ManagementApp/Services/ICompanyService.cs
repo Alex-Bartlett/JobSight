@@ -5,6 +5,6 @@ namespace ManagementApp.Services
     public interface ICompanyService
     {
         Company Company { get; }
-        Company SetCompany();
+        Company Set();
     }
 }
