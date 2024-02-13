@@ -1,31 +1,31 @@
-﻿using JobSightLib.Models;
+﻿using Shared.Models;
+using Shared.Repositories;
 
 namespace ManagementApp.Services
 {
     public class JobService : IJobService
     {
-        private readonly ApiDataService _apiDataService;
-        public List<Job> Jobs { get; set; }
-        public JobService(ApiDataService apiDataService) 
-        {
-            _apiDataService = apiDataService;
-        }
-        public async Task<List<Job>?> GetAllJobs()
-        {
-            List<Job>? jobs = await _apiDataService.SendQuery<List<Job>>(HttpRequestMethod.GET, "/api/jobs");
+        private readonly IJobRepository _jobRepository;
+        private readonly ILogger _logger;
+        public Company Company { get; }
 
-            // If no jobs are found, return an empty array
-            if (jobs is null)
-            {
-                return [];
-            }
-            return jobs;
+        public JobService(IJobRepository jobRepository, ICompanyService company, ILogger<JobService> logger)
+        {
+            _jobRepository = jobRepository;
+            _logger = logger;
+
+            Company = company.Company;
         }
 
-        public async Task<Job?> GetJob(int jobId)
+        public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            Job? job = await _apiDataService.SendQuery<Job>(HttpRequestMethod.GET, $"/api/job/{jobId}");
-            return job;
+            return await _jobRepository.GetAllAsync(Company.Id);
+        }
+
+        public async Task<Job> GetByIdAsync(int jobId)
+        {
+            _logger.LogInformation("Test!!");
+            return await _jobRepository.GetByIdAsync(jobId);
         }
     }
 }

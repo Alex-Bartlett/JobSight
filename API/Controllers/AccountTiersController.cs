@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using JobSightLib.Models;
-using API.Helpers;
+using Shared;
+using Shared.Models;
 
 namespace API.Controllers
 {
@@ -14,9 +14,9 @@ namespace API.Controllers
     [ApiController]
     public class AccountTiersController : ControllerBase
     {
-        private readonly ApiDbContext _context;
+        private readonly JobSightDbContext _context;
 
-        public AccountTiersController(ApiDbContext context)
+        public AccountTiersController(JobSightDbContext context)
         {
             _context = context;
         }

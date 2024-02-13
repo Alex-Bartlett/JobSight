@@ -1,10 +1,10 @@
-﻿using JobSightLib.Models;
+﻿using Shared.Models;
 
 namespace ManagementApp.Services
 {
-    public interface IJobService
+    public interface IJobService : ICompanySpecificService
     {
-        Task<List<Job>> GetAllJobs();
-        Task<Job> GetJob(int jobId);
+        Task<IEnumerable<Job>> GetAllAsync();
+        Task<Job> GetByIdAsync(int jobId);
     }
 }

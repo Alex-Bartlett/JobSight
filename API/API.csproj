@@ -24,12 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="DTOs\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\JobSightLib\JobSightLib.csproj" />
-  </ItemGroup>
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 
 </Project>

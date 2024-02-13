@@ -1,11 +1,11 @@
 ﻿using JobSightLib.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Helpers
+namespace JobSightInfrastructure
 {
-    public class ApiDbContext : DbContext
+    public class JobSightDbContext : DbContext
     {
-        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
+        public JobSightDbContext(DbContextOptions<JobSightDbContext> options) : base(options)
         {
         }
 
