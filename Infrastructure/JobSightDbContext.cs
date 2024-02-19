@@ -2,10 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Shared.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Reflection.Emit;
 
 namespace Infrastructure
 {
-    public class JobSightDbContext : DbContext
+    public class JobSightDbContext : IdentityDbContext<User>
+
     {
         public JobSightDbContext(DbContextOptions<JobSightDbContext> options) : base(options)
         {
@@ -19,8 +24,6 @@ namespace Infrastructure
         public virtual DbSet<JobNote> JobNotes { get; set; }
         public virtual DbSet<JobTask> JobTasks { get; set; }
         public virtual DbSet<JobTaskImage> JobTaskImages { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         /* When you make changes, use either:
         
@@ -31,6 +34,40 @@ namespace Infrastructure
               dotnet ef migrations add [name]
               dotnet ef database update
         */
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.HasDefaultSchema("Identity");
+            builder.Entity<IdentityUser>(entity =>
+            {
+                entity.ToTable(name: "User");
+            });
+            builder.Entity<IdentityRole>(entity =>
+            {
+                entity.ToTable(name: "Role");
+            });
+            builder.Entity<IdentityUserRole<string>>(entity =>
+            {
+                entity.ToTable("UserRoles");
+            });
+            builder.Entity<IdentityUserClaim<string>>(entity =>
+            {
+                entity.ToTable("UserClaims");
+            });
+            builder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                entity.ToTable("UserLogins");
+            });
+            builder.Entity<IdentityRoleClaim<string>>(entity =>
+            {
+                entity.ToTable("RoleClaims");
+            });
+            builder.Entity<IdentityUserToken<string>>(entity =>
+            {
+                entity.ToTable("UserTokens");
+            });
+        }
     }
 
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<JobSightDbContext>
@@ -43,6 +80,7 @@ namespace Infrastructure
             var builder = new DbContextOptionsBuilder<JobSightDbContext>();
             var connectionString = configuration.GetConnectionString("Development");
             builder.UseNpgsql(connectionString);
+
             return new JobSightDbContext(builder.Options);
         }
     }

@@ -10,14 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\AccountTier.cs" />
+    <Compile Include="..\Shared\Models\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Company.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Customer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Job.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\JobNote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\JobTask.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\JobTaskImage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\UserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\IJobRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\JobRepository.cs" />
   </ItemGroup>

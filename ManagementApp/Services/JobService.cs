@@ -22,10 +22,14 @@ namespace ManagementApp.Services
             return await _jobRepository.GetAllAsync(Company.Id);
         }
 
-        public async Task<Job> GetByIdAsync(int jobId)
+        public async Task<Job?> GetByIdAsync(int jobId)
         {
-            _logger.LogInformation("Test!!");
-            return await _jobRepository.GetByIdAsync(jobId);
+            var job = await _jobRepository.GetByIdAsync(jobId);
+            if (job == null)
+            {
+                _logger.LogWarning($"Job with id '{jobId}' could not be found.");
+            }
+            return job;
         }
     }
 }

@@ -27,19 +27,15 @@ namespace Shared.Repositories
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Get all jobs
-        /// </summary>
-        /// <returns>An IEnumerable of jobs for company</returns>
         public async Task<IEnumerable<Job>> GetAllAsync(int companyId)
         {
             // if companyId is null, will this return all jobs for no company?
             return await _context.Jobs.Where(job => job.Company!.Id == companyId).ToListAsync();
         }
 
-        public async Task<Job> GetByIdAsync(int id)
+        public async Task<Job?> GetByIdAsync(int id)
         {
-            return await _context.Jobs.Where(job => job.Id == id).SingleAsync();
+            return await _context.Jobs.Where(job => job.Id == id).SingleOrDefaultAsync();
         }
 
         public async Task UpdateAsync(Job job)

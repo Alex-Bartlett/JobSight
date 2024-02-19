@@ -12,7 +12,7 @@ namespace Shared.Models
         [Required]
         public int JobId { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public virtual Job? Job { get; set; }
         public virtual User? User { get; set; }
     }
