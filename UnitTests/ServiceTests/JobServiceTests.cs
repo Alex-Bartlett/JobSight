@@ -74,5 +74,25 @@ namespace UnitTests.ServiceTests
             // Assert
             Assert.Equal(stubJobs, jobs);
         }
+
+        [Fact]
+        public async void GetAllAsync_ShouldReturnEmptyList_WhenNoJobsExist()
+        {
+            // Arrange
+            Company stubCompany = new()
+            {
+                Id = 1,
+            };
+
+            IEnumerable<Job> stubJobs = new List<Job>();
+
+            _jobRepositoryMock.Setup(x => x.GetAllAsync(stubCompany.Id)).ReturnsAsync(stubJobs);
+
+            // Act
+            var jobs = await _sut.GetAllAsync();
+
+            // Assert
+            Assert.Empty(jobs);
+        }
     }
 }

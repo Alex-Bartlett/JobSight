@@ -42,9 +42,12 @@ builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
 
 builder.Services.AddLogging();
 
+// Register repositories
 builder.Services.AddScoped<IJobRepository, JobRepository>();
-builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+// Register services
 builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 var app = builder.Build();
 
