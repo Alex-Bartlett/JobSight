@@ -6,20 +6,27 @@ namespace ManagementApp.Services
     public class JobService : IJobService
     {
         private readonly IJobRepository _jobRepository;
+        private ICompanyService _companyService;
         private readonly ILogger _logger;
-        public Company Company { get; }
 
-        public JobService(IJobRepository jobRepository, ICompanyService company, ILogger<JobService> logger)
+        public JobService(IJobRepository jobRepository, ICompanyService companyService, ILogger<JobService> logger)
         {
             _jobRepository = jobRepository;
+            _companyService = companyService;
             _logger = logger;
-
-            Company = company.Company;
         }
 
         public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            return await _jobRepository.GetAllAsync(Company.Id);
+            var currentCompany = _companyService.CurrentCompany;
+            if (currentCompany is not null)
+            {
+                return await _jobRepository.GetAllAsync(currentCompany.Id);
+            }
+            else
+            {
+                return new List<Job>();
+            }
         }
 
         public async Task<Job?> GetByIdAsync(int jobId)

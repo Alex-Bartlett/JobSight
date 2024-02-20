@@ -23,7 +23,7 @@ namespace UnitTests.ManagementApp.ServiceTests
         }
 
         [Fact]
-        public async void ChangeCompany_ShouldUpdateCompanyProperty_WhenCompanyExists()
+        public async void ChangeCompany_ShouldUpdateCurrentCompany_WhenCompanyExists()
         {
             // Arrange
             int companyId = 0;
@@ -35,14 +35,14 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             // Act
             await _sut.ChangeCompany(companyId);
-            var actualId = _sut.Company?.Id;
+            var actualId = _sut.CurrentCompany?.Id;
 
             // Assert
             Assert.Equal(companyId, actualId);
         }
 
         [Fact]
-        public async void ChangeCompany_ShouldReturnCompany_WhenCompanyExists()
+        public async void ChangeCompany_ShouldReturnNewCompany_WhenCompanyExists()
         {
             // Arrange
             int companyId = 0;

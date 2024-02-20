@@ -11,10 +11,10 @@ namespace UnitTests.ManagementApp.ServiceTests
         private readonly JobService _sut;
         private readonly Mock<IJobRepository> _jobRepositoryMock = new();
         private readonly Mock<ICompanyService> _companyServiceMock = new();
-        private readonly Mock<ILogger<JobService>> _loggerMock = new();
+        private readonly Mock<ILogger<JobService>> _jobServiceLoggerMock = new();
         public JobServiceTests()
         {
-            _sut = new JobService(_jobRepositoryMock.Object, _companyServiceMock.Object, _loggerMock.Object);
+            _sut = new JobService(_jobRepositoryMock.Object, _companyServiceMock.Object, _jobServiceLoggerMock.Object);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace UnitTests.ManagementApp.ServiceTests
             var job = await _sut.GetByIdAsync(jobId);
 
             // Assert
-            Assert.Equal(jobId, job.Id);
+            Assert.Equal(jobId, job?.Id);
         }
 
         [Fact]
@@ -53,21 +53,21 @@ namespace UnitTests.ManagementApp.ServiceTests
         public async void GetAllAsync_ShouldReturnMany_WhenJobsExist()
         {
             // Arrange
+            int companyId = 0;
             Company stubCompany = new Company
             {
-                Id = 1,
+                Id = companyId,
             };
 
             IEnumerable<Job> stubJobs = new List<Job>
             {
-                new Job{ Id = 1, Company = stubCompany},
-                new Job{ Id = 2, Company = stubCompany},
-                new Job{ Id = 3, Company = stubCompany},
+                new Job { Id = 1, Company = stubCompany},
+                new Job { Id = 2, Company = stubCompany},
+                new Job { Id = 3, Company = stubCompany},
             };
 
-            /*            _companyServiceMock.Setup() // This whole test needs work. Authentication and identity needs to be set up first
-            */
-            _jobRepositoryMock.Setup(x => x.GetAllAsync(stubCompany.Id)).ReturnsAsync(stubJobs);
+            _companyServiceMock.SetupGet(x => x.CurrentCompany).Returns(stubCompany);
+            _jobRepositoryMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(stubJobs);
 
             // Act
             var jobs = await _sut.GetAllAsync();
@@ -87,7 +87,6 @@ namespace UnitTests.ManagementApp.ServiceTests
             IEnumerable<Job> stubJobs = new List<Job>();
 
             _jobRepositoryMock.Setup(x => x.GetAllAsync(stubCompany.Id)).ReturnsAsync(stubJobs);
-
             // Act
             var jobs = await _sut.GetAllAsync();
 
