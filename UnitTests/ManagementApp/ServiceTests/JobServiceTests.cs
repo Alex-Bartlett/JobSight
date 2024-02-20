@@ -4,7 +4,7 @@ using Moq;
 using Shared.Repositories;
 using Shared.Models;
 
-namespace UnitTests.ServiceTests
+namespace UnitTests.ManagementApp.ServiceTests
 {
     public class JobServiceTests
     {

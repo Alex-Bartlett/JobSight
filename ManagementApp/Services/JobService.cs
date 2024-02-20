@@ -27,7 +27,7 @@ namespace ManagementApp.Services
             var job = await _jobRepository.GetByIdAsync(jobId);
             if (job == null)
             {
-                _logger.LogWarning($"Job with id '{jobId}' could not be found.");
+                _logger.LogWarning($"Job could not be found.", [jobId]);
             }
             return job;
         }

@@ -6,24 +6,26 @@ namespace ManagementApp.Services
     public class CompanyService : ICompanyService
     {
         private readonly ICompanyRepository _companyRepository;
+        private readonly ILogger _logger;
 
-        public CompanyService(ICompanyRepository companyRepository)
+        public CompanyService(ICompanyRepository companyRepository, ILogger<CompanyService> logger)
         {
             _companyRepository = companyRepository;
+            _logger = logger;
         }
-        public Company? Company { get; }
+        public Company? Company { get; private set; }
 
-        public async Task<Company?> SetCompany(int id)
+        public async Task<Company?> ChangeCompany(int companyId)
         {
-            // TESTING ONLY
-            return new Company()
+            Company? newCompany = await _companyRepository.GetByIdAsync(companyId);
+            if (newCompany is not null)
             {
-                Id = 2,
-                AccountTier = new AccountTier()
-                {
-                    Id = 1,
-                },
-            };
+                Company = newCompany;
+            }
+            else {
+                _logger.LogWarning("Company could not be found.", [companyId]);
+            }
+            return newCompany;
         }
     }
 }
