@@ -17,9 +17,9 @@ namespace Shared.Repositories
         }
 
 
-        public async Task AddAsync(Job job)
+        public async Task<Job?> AddAsync(Job job)
         {
-            throw new NotImplementedException();
+            var res = await _context.Jobs.AddAsync(job);
         }
 
         public async Task DeleteAsync(int id)
@@ -38,7 +38,7 @@ namespace Shared.Repositories
             return await _context.Jobs.Where(job => job.Id == id).SingleOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(Job job)
+        public async Task<Job?> UpdateAsync(Job job)
         {
             throw new NotImplementedException();
         }

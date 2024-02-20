@@ -19,8 +19,8 @@ namespace Shared.Repositories
         /// </summary>
         /// <returns>An IEnumerable of jobs for company</returns>
         Task<IEnumerable<Job>> GetAllAsync(int companyId);
-        Task AddAsync(Job job);
-        Task UpdateAsync(Job job);
+        Task<Job?> AddAsync(Job job);
+        Task<Job?> UpdateAsync(Job job);
         Task DeleteAsync(int id);
 
     }

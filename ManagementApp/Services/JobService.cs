@@ -33,11 +33,33 @@ namespace ManagementApp.Services
         public async Task<Job?> GetByIdAsync(int jobId)
         {
             var job = await _jobRepository.GetByIdAsync(jobId);
-            if (job == null)
+            if (job is null)
             {
-                _logger.LogWarning($"Job could not be found.", [jobId]);
+                _logger.LogWarning("Job could not be found.", [jobId]);
             }
             return job;
+        }
+
+        public async Task<Job?> CreateAsync(Job job)
+        {
+            var newJob = await _jobRepository.AddAsync(job);
+
+            if (job is null)
+            {
+                _logger.LogError("Job could not be created.", [job]);
+            }
+
+            return newJob;
+        }
+
+        public Task<Job?> UpdateAsync(Job job)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteAsync(int jobId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

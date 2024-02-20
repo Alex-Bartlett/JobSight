@@ -3,6 +3,7 @@ using ManagementApp.Services;
 using Moq;
 using Shared.Repositories;
 using Shared.Models;
+using System.ComponentModel.Design;
 
 namespace UnitTests.ManagementApp.ServiceTests
 {
@@ -87,12 +88,53 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             IEnumerable<Job> stubJobs = new List<Job>();
 
-            _jobRepositoryMock.Setup(x => x.GetAllAsync(stubCompany.Id)).ReturnsAsync(stubJobs);
+            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+
             // Act
             var jobs = await _sut.GetAllAsync();
 
             // Assert
             Assert.Empty(jobs);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNewJob_WhenJobIsValid()
+        {
+            // Arrange
+            Company stubCompany = new()
+            {
+                Id = 1,
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = 1,
+                CompanyId = 1,
+                Customer = new Customer(),
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+            mockJob.Id = resultJob!.Id; // Update the mockJob with the generated ID (needed for object comparison in assertion)
+
+            // Assert
+            Assert.Equal(mockJob, resultJob);
         }
     }
 }
