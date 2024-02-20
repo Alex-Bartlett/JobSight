@@ -4,7 +4,7 @@ namespace ManagementApp.Services
 {
     public interface ICompanyService
     {
-        Company? CurrentCompany { get; }
+        Company? GetCurrentCompany();
         Task<Company?> ChangeCompany(int id);
     }
 }

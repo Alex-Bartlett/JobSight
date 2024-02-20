@@ -66,11 +66,12 @@ namespace UnitTests.ManagementApp.ServiceTests
                 new Job { Id = 3, Company = stubCompany},
             };
 
-            _companyServiceMock.SetupGet(x => x.CurrentCompany).Returns(stubCompany);
+            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
             _jobRepositoryMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(stubJobs);
 
             // Act
             var jobs = await _sut.GetAllAsync();
+
             // Assert
             Assert.Equal(stubJobs, jobs);
         }

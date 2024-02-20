@@ -7,14 +7,24 @@ namespace ManagementApp.Services
     {
         private readonly ICompanyRepository _companyRepository;
         private readonly ILogger _logger;
+        private Company? CurrentCompany;
 
         public CompanyService(ICompanyRepository companyRepository, ILogger<CompanyService> logger)
         {
             _companyRepository = companyRepository;
             _logger = logger;
         }
-        public Company? CurrentCompany { get; private set; }
 
+        public Company? GetCurrentCompany()
+        {
+            if (CurrentCompany == null)
+            {
+                _logger.LogError("CurrentCompany has not been set.");
+                return null;
+            }
+            return CurrentCompany;
+        }
+        
         public async Task<Company?> ChangeCompany(int companyId)
         {
             Company? newCompany = await _companyRepository.GetByIdAsync(companyId);
@@ -25,7 +35,7 @@ namespace ManagementApp.Services
             else {
                 _logger.LogWarning("Company could not be found.", [companyId]);
             }
-            return newCompany;
+            return CurrentCompany;
         }
     }
 }
