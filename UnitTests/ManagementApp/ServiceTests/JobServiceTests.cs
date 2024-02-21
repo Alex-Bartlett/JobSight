@@ -134,7 +134,7 @@ namespace UnitTests.ManagementApp.ServiceTests
             mockJob.Id = resultJob!.Id; // Update the mockJob with the generated ID (needed for object comparison in assertion)
 
             // Assert
-            Assert.Equal(mockJob, resultJob);
+            Assert.Equivalent(mockJob, resultJob);
         }
     }
 }

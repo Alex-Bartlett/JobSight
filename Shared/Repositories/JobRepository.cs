@@ -19,7 +19,9 @@ namespace Shared.Repositories
 
         public async Task<Job?> AddAsync(Job job)
         {
-            var res = await _context.Jobs.AddAsync(job);
+            _context.Jobs.Add(job);
+            await _context.SaveChangesAsync();
+            return job;
         }
 
         public async Task DeleteAsync(int id)
