@@ -7,17 +7,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialcreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "Identity");
-
             migrationBuilder.CreateTable(
                 name: "AccountTiers",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -31,7 +27,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -57,7 +52,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Customers",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -73,7 +67,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Role",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -88,7 +81,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "User",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -114,7 +106,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Companies",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -130,7 +121,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Companies_AccountTiers_AccountTierId",
                         column: x => x.AccountTierId,
-                        principalSchema: "Identity",
                         principalTable: "AccountTiers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -138,7 +128,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserClaims",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -153,7 +142,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -161,7 +149,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserLogins",
-                schema: "Identity",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
@@ -175,7 +162,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -183,7 +169,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserTokens",
-                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -197,7 +182,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -205,7 +189,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "RoleClaims",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -220,7 +203,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_RoleClaims_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -228,7 +210,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserRoles",
-                schema: "Identity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -240,14 +221,12 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_UserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "Identity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRoles_Role_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "Identity",
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -255,14 +234,17 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Jobs",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Reference = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     CustomerId = table.Column<int>(type: "integer", nullable: false),
-                    CompanyId = table.Column<int>(type: "integer", nullable: false)
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,14 +252,12 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Jobs_Companies_CompanyId",
                         column: x => x.CompanyId,
-                        principalSchema: "Identity",
                         principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Jobs_Customers_CustomerId",
                         column: x => x.CustomerId,
-                        principalSchema: "Identity",
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -285,7 +265,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "JobNotes",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -301,7 +280,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_JobNotes_Jobs_JobId",
                         column: x => x.JobId,
-                        principalSchema: "Identity",
                         principalTable: "Jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -309,7 +287,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "JobTasks",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -318,22 +295,19 @@ namespace Infrastructure.Migrations
                     StartDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     EndDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     JobId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobTasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobTasks_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalSchema: "Identity",
+                        name: "FK_JobTasks_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_JobTasks_Jobs_JobId",
                         column: x => x.JobId,
-                        principalSchema: "Identity",
                         principalTable: "Jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -341,7 +315,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "JobTaskImages",
-                schema: "Identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -356,7 +329,6 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_JobTaskImages_JobTasks_JobTaskId",
                         column: x => x.JobTaskId,
-                        principalSchema: "Identity",
                         principalTable: "JobTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -364,87 +336,73 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: "Identity",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: "Identity",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_AccountTierId",
-                schema: "Identity",
                 table: "Companies",
                 column: "AccountTierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobNotes_JobId",
-                schema: "Identity",
                 table: "JobNotes",
                 column: "JobId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Jobs_CompanyId",
-                schema: "Identity",
                 table: "Jobs",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Jobs_CustomerId",
-                schema: "Identity",
                 table: "Jobs",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobTaskImages_JobTaskId",
-                schema: "Identity",
                 table: "JobTaskImages",
                 column: "JobTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobTasks_JobId",
-                schema: "Identity",
                 table: "JobTasks",
                 column: "JobId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobTasks_UserId1",
-                schema: "Identity",
+                name: "IX_JobTasks_UserId",
                 table: "JobTasks",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: "Identity",
                 table: "Role",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
-                schema: "Identity",
                 table: "RoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
-                schema: "Identity",
                 table: "UserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_UserId",
-                schema: "Identity",
                 table: "UserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
-                schema: "Identity",
                 table: "UserRoles",
                 column: "RoleId");
         }
@@ -453,64 +411,49 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "JobNotes",
-                schema: "Identity");
+                name: "JobNotes");
 
             migrationBuilder.DropTable(
-                name: "JobTaskImages",
-                schema: "Identity");
+                name: "JobTaskImages");
 
             migrationBuilder.DropTable(
-                name: "RoleClaims",
-                schema: "Identity");
+                name: "RoleClaims");
 
             migrationBuilder.DropTable(
-                name: "User",
-                schema: "Identity");
+                name: "User");
 
             migrationBuilder.DropTable(
-                name: "UserClaims",
-                schema: "Identity");
+                name: "UserClaims");
 
             migrationBuilder.DropTable(
-                name: "UserLogins",
-                schema: "Identity");
+                name: "UserLogins");
 
             migrationBuilder.DropTable(
-                name: "UserRoles",
-                schema: "Identity");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "UserTokens",
-                schema: "Identity");
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "JobTasks",
-                schema: "Identity");
+                name: "JobTasks");
 
             migrationBuilder.DropTable(
-                name: "Role",
-                schema: "Identity");
+                name: "Role");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers",
-                schema: "Identity");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Jobs",
-                schema: "Identity");
+                name: "Jobs");
 
             migrationBuilder.DropTable(
-                name: "Companies",
-                schema: "Identity");
+                name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "Customers",
-                schema: "Identity");
+                name: "Customers");
 
             migrationBuilder.DropTable(
-                name: "AccountTiers",
-                schema: "Identity");
+                name: "AccountTiers");
         }
     }
 }

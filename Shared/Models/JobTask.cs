@@ -11,8 +11,6 @@ namespace Shared.Models
         public DateTime? EndDateTime { get; set; }
         [Required]
         public int JobId { get; set; }
-        [Required]
-        public Guid UserId { get; set; }
         public virtual Job? Job { get; set; }
         public virtual User? User { get; set; }
     }

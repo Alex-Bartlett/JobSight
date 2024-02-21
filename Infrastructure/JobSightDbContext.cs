@@ -38,7 +38,6 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.HasDefaultSchema("Identity");
             builder.Entity<IdentityUser>(entity =>
             {
                 entity.ToTable(name: "User");
