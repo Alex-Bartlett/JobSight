@@ -1,5 +1,6 @@
 ﻿@page "/jobs"
 @inject IJobService jobService;
+@attribute [StreamRendering];
 
 <h3>Jobs</h3>
 @if (jobs == null)
