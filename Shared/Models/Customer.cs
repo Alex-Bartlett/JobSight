@@ -10,5 +10,9 @@ namespace Shared.Models
         public string? Name { get; set; }
         public string? Address { get; set; }
         public string? Postcode { get; set; }
+        [Required]
+        public int CompanyId { get; set; }
+        public Company? Company { get; set; }
+
     }
 }
