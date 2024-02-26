@@ -1,0 +1,88 @@
+﻿@page "/jobs/edit";
+@page "/jobs/edit/{Id:int}";
+@inject IJobService jobService;
+@inject ICustomerService customerService;
+@inject ICompanyService companyService;
+
+@if (Id is null)
+{
+    <div>No job found</div>
+    @if (CurrentCompany is not null){
+    <div>Company id: @CurrentCompany.Id</div>
+    }
+}
+
+<h3>EditJob</h3>
+
+<EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm">
+    <label for="reference">Reference</label>
+    <InputText @bind-Value="CurrentJob.Reference"></InputText>
+    <label for="address">Address</label>
+    <InputText @bind-Value="CurrentJob.Address"></InputText>
+    <label for="description">Description</label>
+    <InputText @bind-Value="CurrentJob.Description"></InputText>
+    <label for="customer">Customer</label>
+    <InputSelect @bind-Value="CurrentJob.Customer" @>
+        @if (AllCustomers is not null){
+            @foreach (Customer customer in AllCustomers)
+            {
+                <option value="@customer">@customer.Name</option>
+            }
+        }
+    </InputSelect>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; } = null;
+
+    [SupplyParameterFromForm]
+    public Job CurrentJob { get; set; } = new();
+
+    public IEnumerable<Customer>? AllCustomers { get; set; }
+
+    public Company CurrentCompany { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("Getting customers");
+        AllCustomers = await customerService.GetAllAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // TESTING ONLY - REMOVE ASAP:
+        await companyService.UpdateCurrentCompanyAsync(3);
+
+
+
+        if (Id is not null)
+        {
+            // Try to get job with id
+            var job = await jobService.GetByIdAsync(Id.Value);
+
+            if (job is not null)
+            {
+                CurrentJob.Id = job.Id;
+                CurrentJob.Reference ??= job.Reference;
+                CurrentJob.Address ??= job.Address;
+                CurrentJob.Description ??= job.Description;
+                CurrentJob.Customer ??= job.Customer;
+                CurrentJob.CustomerId = job.CustomerId;
+                CurrentJob.Company ??= job.Company;
+                CurrentJob.CompanyId = job.CompanyId;
+            }
+        }
+
+        var company = await companyService.GetCurrentCompanyAsync();
+        if (company is not null)
+        {
+            CurrentCompany = company;
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        
+    }
+}

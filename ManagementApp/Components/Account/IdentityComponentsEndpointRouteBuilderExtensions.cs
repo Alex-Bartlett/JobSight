@@ -1,14 +1,14 @@
+using ManagementApp.Components.Account.Pages;
+using ManagementApp.Components.Account.Pages.Manage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Shared.Models;
 using System.Security.Claims;
 using System.Text.Json;
-using ManagementApp.Components.Account.Pages;
-using ManagementApp.Components.Account.Pages.Manage;
-using Shared.Models;
 
 namespace Microsoft.AspNetCore.Routing
 {
