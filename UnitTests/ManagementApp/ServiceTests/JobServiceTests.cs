@@ -67,7 +67,7 @@ namespace UnitTests.ManagementApp.ServiceTests
                 new Job { Id = 3, Company = stubCompany},
             };
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
             _jobRepositoryMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(stubJobs);
 
             // Act
@@ -88,7 +88,7 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             IEnumerable<Job> stubJobs = new List<Job>();
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
 
             // Act
             var jobs = await _sut.GetAllAsync();
@@ -125,7 +125,7 @@ namespace UnitTests.ManagementApp.ServiceTests
                 Company = mockJob.Company
             };
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
 
             _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
 

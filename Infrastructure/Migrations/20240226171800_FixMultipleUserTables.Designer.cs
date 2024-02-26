@@ -3,6 +3,7 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(JobSightDbContext))]
-    partial class JobSightDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240226171800_FixMultipleUserTables")]
+    partial class FixMultipleUserTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,7 +370,7 @@ namespace Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<int?>("CurrentCompanyId")
+                    b.Property<int>("CurrentCompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Email")
@@ -432,7 +435,7 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("UserId")
@@ -583,7 +586,9 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Shared.Models.Company", "CurrentCompany")
                         .WithMany()
-                        .HasForeignKey("CurrentCompanyId");
+                        .HasForeignKey("CurrentCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentCompany");
                 });
@@ -592,9 +597,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Shared.Models.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
 
                     b.HasOne("Shared.Models.User", "User")
                         .WithMany()

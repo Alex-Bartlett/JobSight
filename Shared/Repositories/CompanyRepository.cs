@@ -26,6 +26,11 @@ namespace Shared.Repositories
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<Company>> GetAllAsync()
+        {
+            return await _context.Companies.ToListAsync();
+        }
+
         public async Task<Company?> GetByIdAsync(int id)
         {
             return await _context.Companies.Where(c => c.Id == id).SingleOrDefaultAsync();

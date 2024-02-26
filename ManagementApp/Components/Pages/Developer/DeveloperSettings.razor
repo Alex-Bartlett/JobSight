@@ -1,0 +1,47 @@
+﻿@page "/developer/developer-settings"
+@inject ICompanyService companyService;
+@inject IUserService userService;
+
+<h3>Developer Settings</h3>
+
+
+@if (AllCompanies is null)
+{
+    <div>Loading companies...</div>
+}
+else if (CurrentUser is null)
+{
+    <div>Please sign in to edit current company.</div>
+}
+else
+{    
+    <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm">
+        <label for="customer">Customer</label>
+        <InputSelect @bind-Value="CurrentUser.CurrentCompany" @>
+            @if (AllCompanies is not null)
+            {
+                @foreach (Company company in AllCompanies)
+                {
+                    <option value="@company">@company.Name</option>
+                }
+            }
+        </InputSelect>
+    </EditForm>
+}
+
+@code {
+    public User? CurrentUser;
+    public IEnumerable<Company>? AllCompanies;
+    public Company? CurrentCompany;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        AllCompanies = await companyService.GetAllAsync();
+    }
+
+    public void HandleSubmitCurrentCompany()
+    {
+        
+    }
+}

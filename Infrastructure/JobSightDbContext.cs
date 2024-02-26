@@ -24,6 +24,7 @@ namespace Infrastructure
         public virtual DbSet<JobNote> JobNotes { get; set; }
         public virtual DbSet<JobTask> JobTasks { get; set; }
         public virtual DbSet<JobTaskImage> JobTaskImages { get; set; }
+        public virtual DbSet<UserCompany> UserCompanies { get; set; }
 
         /* When you make changes, use either:
         
@@ -38,13 +39,13 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<IdentityUser>(entity =>
+            builder.Entity<User>(entity =>
             {
-                entity.ToTable(name: "User");
+                entity.ToTable(name: "Users");
             });
             builder.Entity<IdentityRole>(entity =>
             {
-                entity.ToTable(name: "Role");
+                entity.ToTable(name: "Roles");
             });
             builder.Entity<IdentityUserRole<string>>(entity =>
             {

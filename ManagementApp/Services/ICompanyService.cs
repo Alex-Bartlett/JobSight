@@ -4,7 +4,8 @@ namespace ManagementApp.Services
 {
     public interface ICompanyService
     {
-        Company? GetCurrentCompany();
-        Task<Company?> ChangeCompany(int id);
+        Task<Company?> GetCurrentCompanyAsync();
+        Task<Company?> UpdateCurrentCompanyAsync(int id);
+        Task<IEnumerable<Company>> GetAllAsync();
     }
 }

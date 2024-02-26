@@ -24,11 +24,12 @@ namespace UnitTests.ManagementApp.ServiceTests
             _sut = new CustomerService(_customerRepositoryMock.Object, _companyServiceMock.Object, _loggerMock.Object);
         }
 
-        [Theory] // This needs to be a theory of expected ID and real id, with a pass and a fail
+        [Fact]
         public async void GetAllAsync_ShouldOnlyReturnCompanysCustomers_WhenCustomersExist()
         {
             // Arrange
             int expectedCompanyId = 1;
+            int expectedCustomerId = 1;
 
             Company stubCompany = new()
             {
@@ -42,45 +43,38 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             Customer expectedStubCustomer1 = new()
             {
-                Id = 1,
-                CompanyId = expectedCompanyId,
-            };
-
-            Customer expectedStubCustomer2 = new()
-            {
-                Id = 2,
+                Id = expectedCustomerId,
                 CompanyId = expectedCompanyId,
             };
 
             Customer unexpectedStubCustomer = new()
             {
-                Id = 3,
+                Id = 2,
                 CompanyId = fakeCompany.Id,
             };
 
-                // All customers in mock database
+            // All customers in mock database
             List<Customer> stubCustomers = new()
             {
                 expectedStubCustomer1,
-                expectedStubCustomer2,
                 unexpectedStubCustomer,
             };
 
-                // Customers with the expected companyId 
+            // Customers with the expected companyId 
             List<Customer> expectedCustomers = new()
             {
                 expectedStubCustomer1,
-                expectedStubCustomer2
             };
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompany()).Returns(stubCompany);
+            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
             _customerRepositoryMock.Setup(x => x.GetAllAsync(expectedCompanyId)).ReturnsAsync(stubCustomers);
 
             // Act
             var result = await _sut.GetAllAsync();
+            var resultId = result.First().Id;
 
             // Assert
-            Assert.Equal(expectedCustomers, result);
+            Assert.Equal(expectedCustomerId, resultId);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ManagementApp.Services
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ICompanyService _companyService;
-        private readonly ILogger<CustomerService> _logger;
+        private readonly ILogger _logger;
 
         public CustomerService(ICustomerRepository customerRepository, ICompanyService companyService, ILogger<CustomerService> logger)
         {
@@ -28,7 +28,7 @@ namespace ManagementApp.Services
 
         public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            var currentCompany = _companyService.GetCurrentCompany();
+            var currentCompany = await _companyService.GetCurrentCompanyAsync();
             if (currentCompany is not null)
             {
                 // This should return an empty list if none exist

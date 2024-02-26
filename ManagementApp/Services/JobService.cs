@@ -18,7 +18,7 @@ namespace ManagementApp.Services
 
         public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            var currentCompany = _companyService.GetCurrentCompany();
+            var currentCompany = await _companyService.GetCurrentCompanyAsync();
             if (currentCompany is not null)
             {
                 return await _jobRepository.GetAllAsync(currentCompany.Id);

@@ -10,10 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\AccountTier.cs" />
+    <Compile Include="..\Shared\Models\UserCompany.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\CompanyRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\CustomerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\ICompanyRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ICustomerRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)repositories\IUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)repositories\UserRepository.cs" />
     <Compile Include="..\Shared\Models\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Company.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Customer.cs" />
