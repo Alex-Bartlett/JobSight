@@ -1,7 +1,7 @@
 ﻿@page "/Developer"
 @inject ICompanyService companyService;
 @inject IUserService userService;
-@inject IToastService toastService;
+@inject ILogger<DeveloperSettings> logger;
 
 @attribute [Authorize]
 
@@ -21,14 +21,13 @@
     else
     {    
         <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm">
-            <InputText @bind-Value="CurrentUser.PhoneNumber"/>
             <label for="currentCompany">Current Company</label>
             <InputSelect @bind-Value="CurrentUser.CurrentCompanyId">
                 @if (AllCompanies is not null)
                 {
                     @foreach (Company company in AllCompanies)
                     {
-                        <option value="@company.Id">@company.Id</option>
+                        <option value="@company.Id">@company.Name</option>
                     }
                 }
             </InputSelect>
@@ -38,32 +37,37 @@
 </AuthorizeView>
 
 @code {
-    [SupplyParameterFromForm]
-    public string? test { get; set; }
-    public User? CurrentUser { get; set; }
+    [SupplyParameterFromForm(FormName = "CompanyForm")]
+    public User CurrentUser { get; set; } = new();
+
     public IEnumerable<Company>? AllCompanies;
 
     protected override async Task OnInitializedAsync()
     {
-        CurrentUser = await userService.GetCurrentUserAsync();
+        var user = await userService.GetCurrentUserAsync();
+        if (user is not null)
+        {
+            CurrentUser.Id ??= user.Id;
+            CurrentUser.CurrentCompanyId ??= user.CurrentCompanyId;
+        }
         AllCompanies = await companyService.GetAllAsync();
     }
 
     public async Task HandleSubmitCurrentCompany()
     {
-        var x = CurrentUser;
         int? currentCompanyId = CurrentUser?.CurrentCompanyId;
-        if (CurrentUser is not null && currentCompanyId is not null)
+
+        if (currentCompanyId is not null)
         {
             var res = await userService.ChangeCurrentCompany(currentCompanyId.Value);
             if (res is not null)
             {
                 // Success
-                toastService.ShowToast("Company updated successfully.", ToastLevel.Success);
+                //toastService.ShowSuccess("Company updated successfully.");
                 return;
             }
         }
-        toastService.ShowToast("Failed to updated company.", ToastLevel.Error);
         // Fail
+        //toastService.ShowError("Failed to updated company.");
     }
 }

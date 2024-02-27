@@ -39,19 +39,8 @@ namespace ManagementApp.Services
 
             if (updatedUser is not null)
             {
-                // Circular dependency avoidance. This can be maybe fixed with an intermediary service that handles updating current values?, but shouldnt work due to the nature of Scoped dependencies??. 
-
-                /*var company = await _companyService.UpdateCurrentCompanyAsync(updatedUser.CurrentCompanyId);
-
-                if (company is null || updatedUser is null)
-                {
-                    _logger.LogError("Failed to change current company. Change was successful in user service, but failed in company service.", [updatedUser, company]);
-                }
-                else
-                {*/
                 // Update currentUser with updatedUser containing the new current company
                 CurrentUser = updatedUser;
-                //}
             }
 
             return CurrentUser.CurrentCompany;

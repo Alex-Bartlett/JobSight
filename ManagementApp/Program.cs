@@ -50,7 +50,6 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IToastService, ToastService>();
 
 var app = builder.Build();
 
