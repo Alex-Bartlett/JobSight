@@ -38,6 +38,7 @@ builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirme
 
 builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
 
+builder.Services.AddBlazorBootstrap();
 builder.Services.AddLogging();
 
 // Register repositories
