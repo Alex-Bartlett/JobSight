@@ -1,38 +1,47 @@
-﻿@page "/developer/developer-settings"
+﻿@page "/Developer"
 @inject ICompanyService companyService;
 @inject IUserService userService;
+@inject IToastService toastService;
+
+@attribute [Authorize]
 
 <h3>Developer Settings</h3>
 
-
-@if (AllCompanies is null)
-{
-    <div>Loading companies...</div>
-}
-else if (CurrentUser is null)
-{
-    <div>Please sign in to edit current company.</div>
-}
-else
-{    
-    <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm">
-        <label for="customer">Customer</label>
-        <InputSelect @bind-Value="CurrentUser.CurrentCompany" @>
-            @if (AllCompanies is not null)
-            {
-                @foreach (Company company in AllCompanies)
+@*Both AuthorizeView and EditForm have a context of 'context'. It needs to be overridden to prevent ambiguity. https://stackoverflow.com/a/77385623*@
+<AuthorizeView Context="AuthContext">
+    @AuthContext.User.Identity?.Name;
+    @if (AllCompanies is null)
+    {
+        <div>Loading companies...</div>
+    }
+    else if (CurrentUser is null)
+    {
+        <div>Please sign in to edit current company.</div>
+    }
+    else
+    {    
+        <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm">
+            <InputText @bind-Value="CurrentUser.PhoneNumber"/>
+            <label for="currentCompany">Current Company</label>
+            <InputSelect @bind-Value="CurrentUser.CurrentCompanyId">
+                @if (AllCompanies is not null)
                 {
-                    <option value="@company">@company.Name</option>
+                    @foreach (Company company in AllCompanies)
+                    {
+                        <option value="@company.Id">@company.Id</option>
+                    }
                 }
-            }
-        </InputSelect>
-    </EditForm>
-}
+            </InputSelect>
+            <button type="submit">Save</button>
+        </EditForm>
+    }
+</AuthorizeView>
 
 @code {
-    public User? CurrentUser;
+    [SupplyParameterFromForm]
+    public string? test { get; set; }
+    public User? CurrentUser { get; set; }
     public IEnumerable<Company>? AllCompanies;
-    public Company? CurrentCompany;
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,8 +49,21 @@ else
         AllCompanies = await companyService.GetAllAsync();
     }
 
-    public void HandleSubmitCurrentCompany()
+    public async Task HandleSubmitCurrentCompany()
     {
-        
+        var x = CurrentUser;
+        int? currentCompanyId = CurrentUser?.CurrentCompanyId;
+        if (CurrentUser is not null && currentCompanyId is not null)
+        {
+            var res = await userService.ChangeCurrentCompany(currentCompanyId.Value);
+            if (res is not null)
+            {
+                // Success
+                toastService.ShowToast("Company updated successfully.", ToastLevel.Success);
+                return;
+            }
+        }
+        toastService.ShowToast("Failed to updated company.", ToastLevel.Error);
+        // Fail
     }
 }
