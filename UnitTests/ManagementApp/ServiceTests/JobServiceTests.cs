@@ -67,11 +67,10 @@ namespace UnitTests.ManagementApp.ServiceTests
                 new Job { Id = 3, Company = stubCompany},
             };
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
             _jobRepositoryMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(stubJobs);
 
             // Act
-            var jobs = await _sut.GetAllAsync();
+            var jobs = await _sut.GetAllAsync(companyId);
 
             // Assert
             Assert.Equal(stubJobs, jobs);
@@ -81,17 +80,16 @@ namespace UnitTests.ManagementApp.ServiceTests
         public async void GetAllAsync_ShouldReturnEmptyList_WhenNoJobsExist()
         {
             // Arrange
+            int companyId = 1;
             Company stubCompany = new()
             {
-                Id = 1,
+                Id = companyId
             };
 
             IEnumerable<Job> stubJobs = new List<Job>();
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
-
             // Act
-            var jobs = await _sut.GetAllAsync();
+            var jobs = await _sut.GetAllAsync(companyId);
 
             // Assert
             Assert.Empty(jobs);
@@ -125,8 +123,6 @@ namespace UnitTests.ManagementApp.ServiceTests
                 Company = mockJob.Company
             };
 
-            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
-
             _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
 
             // Act
@@ -134,7 +130,7 @@ namespace UnitTests.ManagementApp.ServiceTests
             mockJob.Id = resultJob!.Id; // Update the mockJob with the generated ID (needed for object comparison in assertion)
 
             // Assert
-            Assert.Equivalent(mockJob, resultJob);
+            Assert.Equivalent(mockJob, resultJob, strict: true);
         }
     }
 }

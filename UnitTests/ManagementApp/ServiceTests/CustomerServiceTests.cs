@@ -16,12 +16,13 @@ namespace UnitTests.ManagementApp.ServiceTests
 
         private readonly CustomerService _sut;
         private readonly Mock<ICustomerRepository> _customerRepositoryMock = new();
+        private readonly Mock<IUserService> _userServiceMock = new();
         private readonly Mock<ICompanyService> _companyServiceMock = new();
         private readonly Mock<ILogger<CustomerService>> _loggerMock = new();
 
         public CustomerServiceTests()
         {
-            _sut = new CustomerService(_customerRepositoryMock.Object, _companyServiceMock.Object, _loggerMock.Object);
+            _sut = new CustomerService(_customerRepositoryMock.Object, _userServiceMock.Object, _companyServiceMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -60,17 +61,10 @@ namespace UnitTests.ManagementApp.ServiceTests
                 unexpectedStubCustomer,
             };
 
-            // Customers with the expected companyId 
-            List<Customer> expectedCustomers = new()
-            {
-                expectedStubCustomer1,
-            };
-
-            _companyServiceMock.Setup(x => x.GetCurrentCompanyAsync()).ReturnsAsync(stubCompany);
             _customerRepositoryMock.Setup(x => x.GetAllAsync(expectedCompanyId)).ReturnsAsync(stubCustomers);
 
             // Act
-            var result = await _sut.GetAllAsync();
+            var result = await _sut.GetAllAsync(expectedCustomerId);
             var resultId = result.First().Id;
 
             // Assert
