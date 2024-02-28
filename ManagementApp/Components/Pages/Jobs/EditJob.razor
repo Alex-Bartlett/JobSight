@@ -2,7 +2,6 @@
 @page "/jobs/edit/{Id:int}";
 @inject IJobService jobService;
 @inject ICustomerService customerService;
-@inject ICompanyService companyService;
 @inject IUserService userService;
 
 @if (Id is null)
@@ -46,16 +45,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await UpdateCurrentCompany();
         Console.WriteLine("Getting customers");
-        AllCustomers = await customerService.GetAllAsync();
+
+        if (CurrentCompany is not null) {
+            AllCustomers = await customerService.GetAllAsync(CurrentCompany.Id);
+        }
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        // TESTING ONLY - REMOVE ASAP:
-        await companyService.UpdateCurrentCompanyAsync(3);
-
-
 
         if (Id is not null)
         {
@@ -74,12 +73,12 @@
                 CurrentJob.CompanyId = job.CompanyId;
             }
         }
+    }
 
-        var company = await companyService.GetCurrentCompanyAsync();
-        if (company is not null)
-        {
-            CurrentCompany = company;
-        }
+    private async Task UpdateCurrentCompany()
+    {
+        var user = await userService.GetCurrentUserAsync();
+        CurrentCompany = user?.CurrentCompany;
     }
 
     async Task HandleSubmit()

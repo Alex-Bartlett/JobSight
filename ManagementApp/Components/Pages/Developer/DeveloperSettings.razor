@@ -62,7 +62,7 @@
 
         if (currentCompanyId is not null)
         {
-            var res = await userService.ChangeCurrentCompany(currentCompanyId.Value);
+            var res = await userService.ChangeCurrentCompanyAsync(currentCompanyId.Value);
             if (res is not null)
             {
                 // Success

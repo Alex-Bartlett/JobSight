@@ -16,18 +16,9 @@ namespace ManagementApp.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Job>> GetAllAsync()
+        public async Task<IEnumerable<Job>> GetAllAsync(int companyId)
         {
-            var currentCompany = await _companyService.GetCurrentCompanyAsync();
-            if (currentCompany is not null)
-            {
-                return await _jobRepository.GetAllAsync(currentCompany.Id);
-            }
-            else
-            {
-                // Return an empty list if currentCompany is null
-                return new List<Job>();
-            }
+            return await _jobRepository.GetAllAsync(companyId);
         }
 
         public async Task<Job?> GetByIdAsync(int jobId)

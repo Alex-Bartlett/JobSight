@@ -1,5 +1,6 @@
 ﻿@page "/jobs"
 @inject IJobService jobService;
+@inject IUserService userService;
 @attribute [StreamRendering];
 
 <h3>Jobs</h3>
@@ -32,10 +33,23 @@ else {
 @code {
     IEnumerable<Job>? jobs = null;
     Job? job = null;
+    int? currentCompanyId;
 
     protected override async Task OnInitializedAsync()
     {
-        jobs = await jobService.GetAllAsync();
+        await SetCurrentCompanyId();
+        if (currentCompanyId is not null)
+        {
+            jobs = await jobService.GetAllAsync(currentCompanyId.Value);
+        }
         job = await jobService.GetByIdAsync(1);
+    }
+
+    private async Task SetCurrentCompanyId() {
+        var user = await userService.GetCurrentUserAsync();
+        if (user?.CurrentCompanyId is not null)
+        {
+            currentCompanyId = user.CurrentCompanyId.Value;
+        }
     }
 }

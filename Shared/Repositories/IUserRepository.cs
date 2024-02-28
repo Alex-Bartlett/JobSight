@@ -8,7 +8,6 @@ namespace Shared.Repositories
 {
     public interface IUserRepository
     {
-        public Task<User?> ChangeCurrentCompanyAsync(User user, int companyId);
-        public Task<bool> UserBelongsToCompanyAsync(User user, int companyId);
+
     }
 }

@@ -4,8 +4,13 @@ namespace ManagementApp.Services
 {
     public interface IUserService
     {
-        public Task<Company?> ChangeCurrentCompany(int companyId);
         public Task<User?> GetCurrentUserAsync();
-        public Task UpdateCurrentUser();
+        public Task UpdateCurrentUserAsync();
+        /// <summary>
+        /// A method to quickly get the current company id. Can be used as a shortcut for some methods. In regular practice, get the Company from GetCurrentUserAsync()
+        /// </summary>
+        /// <returns>The id of the user's current company</returns>
+        public Task<int?> GetCurrentCompanyIdAsync();
+        public Task<User?> ChangeCurrentCompanyAsync(int companyId);
     }
 }

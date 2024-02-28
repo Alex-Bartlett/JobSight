@@ -4,7 +4,7 @@ namespace ManagementApp.Services
 {
     public interface IJobService : ICompanySpecificService
     {
-        Task<IEnumerable<Job>> GetAllAsync();
+        Task<IEnumerable<Job>> GetAllAsync(int companyId);
         Task<Job?> GetByIdAsync(int jobId);
 
         /// <summary>
