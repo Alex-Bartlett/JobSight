@@ -27,6 +27,7 @@ namespace UnitTests.ManagementApp.ServiceTests
     public class UserServiceTests
     {
         private readonly UserService _sut;
+        private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUserCompanyRepository> _userCompanyRepositoryMock = new();
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
         private readonly Mock<UserManager<User>> _userManagerMock;
@@ -36,7 +37,7 @@ namespace UnitTests.ManagementApp.ServiceTests
         public UserServiceTests()
         {
             _userManagerMock = GenerateUserManagerMock();
-            _sut = new UserService(_userCompanyRepositoryMock.Object, _httpContextAccessorMock.Object, _userManagerMock.Object, _companyRepositoryMock.Object, _loggerMock.Object);
+            _sut = new UserService(_userRepositoryMock.Object, _userCompanyRepositoryMock.Object, _httpContextAccessorMock.Object, _userManagerMock.Object, _companyRepositoryMock.Object, _loggerMock.Object);
         }
         private Mock<UserManager<User>> GenerateUserManagerMock()
         {

@@ -8,13 +8,18 @@ namespace Shared.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly JobSightDbContext _context;
-        private readonly ILogger _logger;
-        public UserRepository(JobSightDbContext context, ILogger<UserRepository> logger)
+        public UserRepository(JobSightDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-
+        public async Task<User?> GetUserWithNavigationsByIdAsync(string id)
+        {
+            var result = await _context.Users
+                .Include(u => u.CurrentCompany)
+                .Where(u => u.Id == id)
+                .SingleOrDefaultAsync();
+            return result;
+        }
     }
 }

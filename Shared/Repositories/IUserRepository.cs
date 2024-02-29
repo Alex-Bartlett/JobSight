@@ -8,6 +8,6 @@ namespace Shared.Repositories
 {
     public interface IUserRepository
     {
-
+        public Task<User?> GetUserWithNavigationsByIdAsync(string id);
     }
 }
