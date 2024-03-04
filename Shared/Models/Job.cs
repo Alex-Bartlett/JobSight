@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.Models
 {
-    public class Job
+    public class Job : AuditableEntity
     {
         public int Id { get; set; }
         [Required]
@@ -17,9 +17,5 @@ namespace Shared.Models
         public int? CompanyId { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual Company? Company { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedAt { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime UpdatedAt { get; set; }
     }
 }

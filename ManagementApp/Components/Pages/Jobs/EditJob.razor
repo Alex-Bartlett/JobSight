@@ -14,7 +14,7 @@ else
     <h3>Edit job</h3>
 }
 
-@if (CurrentCompany is null)
+@if (CurrentUser?.CurrentCompany is null)
 {
     <p>You shouldn't be here</p>
 }
@@ -49,8 +49,9 @@ else {
     [SupplyParameterFromForm]
     public Job CurrentJob { get; set; } = new();
 
-    public Company? CurrentCompany { get; set; }
     public IEnumerable<Customer>? Customers { get; set; }
+
+    public User? CurrentUser;
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,14 +91,14 @@ else {
     private async Task UpdateCurrentCompany()
     {
         var user = await userService.GetCurrentUserWithNavigationsAsync();
-        CurrentCompany = user?.CurrentCompany;
+        CurrentUser = user;
     }
 
     private async Task UpdateCustomerList()
     {
-        if (CurrentCompany is not null)
+        if (CurrentUser?.CurrentCompanyId is not null)
         {
-            Customers = await customerService.GetAllAsync(CurrentCompany.Id);
+            Customers = await customerService.GetAllAsync(CurrentUser.CurrentCompanyId.Value);
         }
     }
 
@@ -107,8 +108,13 @@ else {
         // So effectively, companyId won't be changed when editing a job.
         if (CurrentJob.CompanyId is null)
         {
-            CurrentJob.CompanyId = CurrentCompany!.Id;
+            CurrentJob.CompanyId = CurrentUser!.CurrentCompanyId!.Value;
         }
+
+        // Add auditing (see JobSightDbContext)
+        CurrentJob.CreatedBy = CurrentUser?.NormalizedEmail;
+        CurrentJob.UpdatedBy = CurrentUser?.NormalizedEmail;
+
         var newJob = await jobService.CreateAsync(CurrentJob);
         if (newJob is not null)
         {

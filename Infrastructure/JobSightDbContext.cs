@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Emit;
 
@@ -67,6 +66,42 @@ namespace Infrastructure
             {
                 entity.ToTable("UserTokens");
             });
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            // Add auditing on SaveChangesAsync - this should be added for SaveChanges too? (although SaveChanges is never used)
+            // https://dev.to/rickystam/ef-core-how-to-implement-basic-auditing-on-your-entities-1mbm
+
+            var defaultUser = "JobSight";
+
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is AuditableEntity && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    ((AuditableEntity)entry.Entity).CreatedOn = DateTime.UtcNow;
+                    // HttpContextAccessor cannot be used here, since it's a separate project. So instead, this needs to be supplied in the entity. Use a default when not supplied.
+                    ((AuditableEntity)entry.Entity).CreatedBy ??= defaultUser;
+                }
+                else
+                {
+                    Entry((AuditableEntity)entry.Entity).Property(p => p.CreatedOn).IsModified = false;
+                    // This makes it impossible to overwrite CreatedBy, necessary for httpContextAccessor-less approach
+                    Entry((AuditableEntity)entry.Entity).Property(p => p.CreatedBy).IsModified = false;
+                }
+
+                // Always update UpdatedOn/By properties
+                ((AuditableEntity)entry.Entity).UpdatedOn = DateTime.UtcNow;
+                ((AuditableEntity)entry.Entity).UpdatedBy ??= defaultUser;
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 
