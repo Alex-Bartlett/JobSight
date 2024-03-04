@@ -1,19 +1,24 @@
 ﻿@page "/jobs/edit";
 @page "/jobs/edit/{Id:int}";
+@inject NavigationManager navigationManager;
 @inject IJobService jobService;
 @inject ICustomerService customerService;
 @inject IUserService userService;
 
 @if (Id is null)
 {
-    <div>No job found</div>
-    @if (CurrentCompany is not null){
-    <div>Company id: @CurrentCompany.Id</div>
-    }
+    <h3>Create job</h3>
+}
+else
+{
+    <h3>Edit job</h3>
 }
 
-<h3>EditJob</h3>
-
+@if (CurrentCompany is null)
+{
+    <p>You shouldn't be here</p>
+}
+else {
 <EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm">
     <label for="reference">Reference</label>
     <InputText @bind-Value="CurrentJob.Reference"></InputText>
@@ -22,15 +27,20 @@
     <label for="description">Description</label>
     <InputText @bind-Value="CurrentJob.Description"></InputText>
     <label for="customer">Customer</label>
-    <InputSelect @bind-Value="CurrentJob.Customer" @>
-        @if (AllCustomers is not null){
-            @foreach (Customer customer in AllCustomers)
+    <InputSelect @bind-Value="CurrentJob.CustomerId" @>
+        @if (Customers is not null){
+            @foreach (Customer customer in Customers)
             {
-                <option value="@customer">@customer.Name</option>
+                <option value="@customer.Id">@customer.Name</option>
             }
         }
+        else {
+            <option>-- No customers --</option>
+        }
     </InputSelect>
+    <button type="submit">Create</button>
 </EditForm>
+}
 
 @code {
     [Parameter]
@@ -39,18 +49,12 @@
     [SupplyParameterFromForm]
     public Job CurrentJob { get; set; } = new();
 
-    public IEnumerable<Customer>? AllCustomers { get; set; }
-
     public Company? CurrentCompany { get; set; }
+    public IEnumerable<Customer>? Customers { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await UpdateCurrentCompany();
-        Console.WriteLine("Getting customers");
-
-        if (CurrentCompany is not null) {
-            AllCustomers = await customerService.GetAllAsync(CurrentCompany.Id);
-        }
+        await InitalizeData();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -75,14 +79,44 @@
         }
     }
 
+    // TODO: Figure out why models are coming through as null in entities. e.g. companyId is set but company is null. 
+
+    private async Task InitalizeData()
+    {
+        await UpdateCurrentCompany();
+        await UpdateCustomerList();
+    }
+
     private async Task UpdateCurrentCompany()
     {
-        var user = await userService.GetCurrentUserAsync();
+        var user = await userService.GetCurrentUserWithNavigationsAsync();
         CurrentCompany = user?.CurrentCompany;
+    }
+
+    private async Task UpdateCustomerList()
+    {
+        if (CurrentCompany is not null)
+        {
+            Customers = await customerService.GetAllAsync(CurrentCompany.Id);
+        }
     }
 
     async Task HandleSubmit()
     {
-        
+        // It's probably not necessary to have this in an if block, but otherwise it *may* be possible to accidentally give the job to a different company.
+        // So effectively, companyId won't be changed when editing a job.
+        if (CurrentJob.CompanyId is null)
+        {
+            CurrentJob.CompanyId = CurrentCompany!.Id;
+        }
+        var newJob = await jobService.CreateAsync(CurrentJob);
+        if (newJob is not null)
+        {
+            navigationManager.NavigateTo($"/job/{newJob.Id}");
+        }
+        else
+        {
+            throw new Exception("Job failed to create");
+        }
     }
 }

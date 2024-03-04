@@ -4,6 +4,7 @@
 @attribute [StreamRendering];
 
 <h3>Jobs</h3>
+<a href="/jobs/edit">New job</a>
 @if (jobs == null)
 {
     <span>Loading...</span>
@@ -41,6 +42,9 @@ else {
         if (currentCompanyId is not null)
         {
             jobs = await jobService.GetAllAsync(currentCompanyId.Value);
+        }
+        else {
+            jobs = new List<Job>();
         }
         job = await jobService.GetByIdAsync(1);
     }

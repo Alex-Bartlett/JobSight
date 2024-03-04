@@ -12,9 +12,9 @@ namespace Shared.Models
         public string? Address { get; set; }
         public string? Description { get; set; }
         [Required]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
         [Required]
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual Company? Company { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
