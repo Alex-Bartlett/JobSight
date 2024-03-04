@@ -15,12 +15,43 @@ else if (jobs.Count() == 0)
 }
 else
 {
-    <ul>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Reference
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
         @foreach (Job job in jobs)
         {
-            <li>@job.Id</li>
+            <tr>
+                <td>
+                    @job.Id
+                </td>
+                <td>
+                    @job.Reference
+                </td>
+                <td>
+                    @job.Customer?.Name
+                </td>
+                <td>
+                    <a href="/job/@job.Id">View</a>
+                </td>
+            </tr>
         }
-    </ul>
+        </tbody>
+    </table>
 }
 
 @if (job == null)

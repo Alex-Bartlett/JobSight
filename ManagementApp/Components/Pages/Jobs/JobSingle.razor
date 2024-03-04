@@ -1,0 +1,30 @@
+﻿@page "/job/{id:int}"
+@inject IJobService jobService
+
+@if (Job is null)
+{
+    <h3>Job not found</h3>
+    <p></p>
+}
+else
+{
+    <h3>Job</h3>
+    <h4>@Job.Reference</h4>
+
+
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; } = null;
+
+    public Job? Job { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id is not null)
+        {
+            Job = await jobService.GetByIdAsync(Id.Value);
+        }
+    }
+}

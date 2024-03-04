@@ -32,12 +32,20 @@ namespace Shared.Repositories
         public async Task<IEnumerable<Job>> GetAllAsync(int companyId)
         {
             // if companyId is null, will this return all jobs for no company?
-            return await _context.Jobs.Where(job => job.Company!.Id == companyId).ToListAsync();
+            return await _context.Jobs
+                .Where(job => job.Company!.Id == companyId)
+                .Include(job => job.Company)
+                .Include(job => job.Customer)
+                .ToListAsync();
         }
 
         public async Task<Job?> GetByIdAsync(int id)
         {
-            return await _context.Jobs.Where(job => job.Id == id).SingleOrDefaultAsync();
+            return await _context.Jobs
+                .Where(job => job.Id == id)
+                .Include(job => job.Company)
+                .Include(job => job.Customer)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<Job?> UpdateAsync(Job job)
