@@ -1,0 +1,66 @@
+﻿@page "/customers/edit";
+@page "/customers/edit/{Id:int}"
+
+@inject ICustomerService customerService
+@inject IUserService userService
+
+@if (Id is null)
+{
+    <h3>Create customer</h3>
+}
+else
+{
+    <h3>Editing customer</h3>
+}
+
+<EditForm Model="CurrentCustomer" OnSubmit="HandleSubmit" FormName="CustomerForm">
+    <label for="name">Name</label>
+    <InputText @bind-Value="CurrentCustomer.Name"></InputText>
+    <label for="address">Address</label>
+    <InputText @bind-Value="CurrentCustomer.Address"></InputText>
+    <label for="postcode">Postcode</label>
+    <InputText @bind-Value="CurrentCustomer.Postcode"></InputText>
+    <button type="submit">Submit</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    [SupplyParameterFromForm]
+    public Customer CurrentCustomer { get; set; } = new();
+
+    public User? CurrentUser;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await InitializeData();
+    }
+
+    private async Task InitializeData()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        await PopulateCurrentCustomer();
+    }
+
+    private async Task PopulateCurrentCustomer()
+    {
+        if (Id is not null)
+        {
+            var customer = await customerService.GetByIdAsync(Id.Value);
+            if (customer is not null)
+            {
+                CurrentCustomer.Id = customer.Id;
+                CurrentCustomer.Name ??= customer.Name;
+                CurrentCustomer.Address ??= customer.Address;
+                CurrentCustomer.Postcode ??= customer.Postcode;
+            }
+        }
+    }
+
+    public async Task HandleSubmit()
+    {
+        
+    }
+}

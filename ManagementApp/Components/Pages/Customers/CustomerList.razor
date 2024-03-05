@@ -1,0 +1,61 @@
+﻿@page "/customers"
+@inject ICustomerService customerService
+@inject IUserService userService
+
+<h3>Customers</h3>
+@if (Customers.Count() == 0)
+{
+    <p>No customers found. <a href="/customer/edit">Add a customer?</a></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Address
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Customer customer in Customers)
+            {
+                    <tr>
+                        <td>
+                            <a href="/customer/@customer.Id">
+                                @customer.Id
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/customer/@customer.Id">
+                                @customer.Name
+                            </a>
+                        </td>
+                        <td>
+                            @customer.Address
+                        </td>
+                    </tr>    
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public User? CurrentUser { get; set; }
+    public IEnumerable<Customer> Customers { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        if (CurrentUser?.CurrentCompanyId is not null)
+        {
+            Customers = await customerService.GetAllAsync(CurrentUser.CurrentCompanyId.Value);
+        }
+    }
+}

@@ -33,9 +33,15 @@ namespace ManagementApp.Services
             return await _customerRepository.GetAllAsync(companyId);
         }
 
-        public Task<Customer?> GetByIdAsync(int id)
+        public async Task<Customer?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            // This needs to be implemented in a general sense. Can't have every method check if the user is validated.
+            var currentCompanyId = await _userService.GetCurrentCompanyIdAsync();
+            if (currentCompanyId is null)
+            {
+                _logger.LogError("User is not logged in");
+            }
+            return new Customer();
         }
 
         public Task<Customer?> UpdateAsync(Customer customer)
