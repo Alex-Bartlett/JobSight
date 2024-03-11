@@ -21,13 +21,14 @@ namespace ManagementApp.Services
             return await _jobRepository.GetAllAsync(companyId);
         }
 
-        public async Task<Job?> GetByIdAsync(int jobId)
+        public async Task<Job?> GetByIdAsync(int jobId, User user)
         {
             var job = await _jobRepository.GetByIdAsync(jobId);
             if (job is null)
             {
                 _logger.LogWarning("Job could not be found.", [jobId]);
             }
+            CheckForAuthorizationViolations(job, user);
             return job;
         }
 
@@ -41,6 +42,25 @@ namespace ManagementApp.Services
             }
 
             return newJob;
+        }
+
+        /// <summary>
+        /// Checks if the user's current company matches the job's company. If not, throws an exception.
+        /// </summary>
+        /// <param name="job">The job to check</param>
+        /// <param name="user">The current user</param>
+        /// <exception cref="UnauthorizedAccessException">Thrown if the user is not allowed to access the job.</exception>
+        private void CheckForAuthorizationViolations(Job? job, User user)
+        {
+            if (job is null)
+            {
+                return;
+            }
+            if (user.CurrentCompanyId != job.CompanyId)
+            {
+                _logger.LogWarning("User tried to access unauthorized resource.", [job.Id, user.Id]);
+                throw new UnauthorizedAccessException("User is not authorized to access this job.");
+            }
         }
 
         public Task<Job?> UpdateAsync(Job job)

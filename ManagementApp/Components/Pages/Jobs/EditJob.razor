@@ -14,9 +14,13 @@ else
     <h3>Edit job</h3>
 }
 
-@if (CurrentUser?.CurrentCompany is null)
+@if (CurrentUser is null)
 {
-    <p>You shouldn't be here</p>
+    <p>Please sign in.</p>
+}
+else if (Unauthorized)
+{
+    <p>You are not authorized to access this resource.</p>
 }
 else {
 <EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm">
@@ -53,30 +57,36 @@ else {
 
     public User? CurrentUser;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await InitalizeData();
-    }
+    public bool Unauthorized = false;
 
     protected override async Task OnParametersSetAsync()
     {
+        await InitalizeData();
 
-        if (Id is not null)
+        if (Id is not null && CurrentUser is not null)
         {
             // Try to get job with id
-            var job = await jobService.GetByIdAsync(Id.Value);
-
-            if (job is not null)
+            try
             {
-                CurrentJob.Id = job.Id;
-                CurrentJob.Reference ??= job.Reference;
-                CurrentJob.Address ??= job.Address;
-                CurrentJob.Description ??= job.Description;
-                CurrentJob.Customer ??= job.Customer;
-                CurrentJob.CustomerId = job.CustomerId;
-                CurrentJob.Company ??= job.Company;
-                CurrentJob.CompanyId = job.CompanyId;
+                var job = await jobService.GetByIdAsync(Id.Value, CurrentUser);
+
+                if (job is not null)
+                {
+                    CurrentJob.Id = job.Id;
+                    CurrentJob.Reference ??= job.Reference;
+                    CurrentJob.Address ??= job.Address;
+                    CurrentJob.Description ??= job.Description;
+                    CurrentJob.Customer ??= job.Customer;
+                    CurrentJob.CustomerId = job.CustomerId;
+                    CurrentJob.Company ??= job.Company;
+                    CurrentJob.CompanyId = job.CompanyId;
+                }
             }
+            catch (UnauthorizedAccessException)
+            {
+                Unauthorized = true;
+            }
+
         }
     }
 

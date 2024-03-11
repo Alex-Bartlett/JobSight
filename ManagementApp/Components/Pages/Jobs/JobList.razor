@@ -54,17 +54,8 @@ else
     </table>
 }
 
-@if (job == null)
-{
-    <span>Not found</span>
-}
-else {
-    <span>@job.Id</span>
-}
-
 @code {
     IEnumerable<Job>? jobs = null;
-    Job? job = null;
     int? currentCompanyId;
 
     protected override async Task OnInitializedAsync()
@@ -77,7 +68,6 @@ else {
         else {
             jobs = new List<Job>();
         }
-        job = await jobService.GetByIdAsync(1);
     }
 
     private async Task SetCurrentCompanyId() {

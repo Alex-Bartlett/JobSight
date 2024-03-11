@@ -10,7 +10,7 @@
 
 <Toasts Messages="messages" AutoHide="true" Delay="3000" Placement="ToastsPlacement.TopRight" />
 
-@*Both AuthorizeView and EditForm have a context of 'context'. It needs to be overridden to prevent ambiguity. https://stackoverflow.com/a/77385623*@
+@*Both AuthorizeView and EditForm have a default context of 'context'. It needs to be overridden to prevent ambiguity. https://stackoverflow.com/a/77385623*@
 <AuthorizeView Context="AuthContext">
     @AuthContext.User.Identity?.Name;
     @if (AllCompanies is null)

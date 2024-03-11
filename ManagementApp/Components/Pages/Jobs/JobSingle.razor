@@ -1,10 +1,20 @@
 ﻿@page "/job/{id:int}"
 @inject IJobService jobService
+@inject IUserService userService
+@inject NavigationManager navigationManager
 
 @if (Job is null)
 {
     <h3>Job not found</h3>
-    <p></p>
+    @if (CurrentUser?.CurrentCompany is not null)
+    {
+        <p>A job for @CurrentUser.CurrentCompany.Name could not be found at this address.</p>
+    }
+    else
+    {
+        <!--The user shouldn't be able to access this page if they're not signed in anyway. This is an error if this user sees this. -->
+        <p>Please sign in</p>
+    }
 }
 else
 {
@@ -18,13 +28,23 @@ else
     [Parameter]
     public int? Id { get; set; } = null;
 
-    public Job? Job { get; set; }
+    public Job? Job;
+    public User? CurrentUser;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Id is not null)
+        CurrentUser = await userService.GetCurrentUserWithNavigationsAsync();
+
+        if (Id is not null && CurrentUser is not null)
         {
-            Job = await jobService.GetByIdAsync(Id.Value);
+            try
+            {
+                Job = await jobService.GetByIdAsync(Id.Value, CurrentUser);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Job = null;
+            }
         }
     }
 }

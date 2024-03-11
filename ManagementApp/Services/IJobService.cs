@@ -5,7 +5,15 @@ namespace ManagementApp.Services
     public interface IJobService : ICompanySpecificService
     {
         Task<IEnumerable<Job>> GetAllAsync(int companyId);
-        Task<Job?> GetByIdAsync(int jobId);
+
+        /// <summary>
+        /// Gets a single job
+        /// </summary>
+        /// <param name="jobId">The id of the job to get</param>
+        /// <param name="user">The current user</param>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException">Thrown if the job is not for the current company</exception>
+        Task<Job?> GetByIdAsync(int jobId, User user);
 
         /// <summary>
         /// Creates a new job based on the given job object, and returns it.
