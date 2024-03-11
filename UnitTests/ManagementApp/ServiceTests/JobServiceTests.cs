@@ -23,15 +23,21 @@ namespace UnitTests.ManagementApp.ServiceTests
         {
             // Arrange
             int jobId = 0;
-            var stubJob = new Job
+            int companyId = 0;
+            Job stubJob = new()
             {
                 Id = jobId,
+                CompanyId = companyId,
+            };
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
             };
             _jobRepositoryMock.Setup(x => x.GetByIdAsync(jobId))
                 .ReturnsAsync(stubJob);
 
             // Act
-            var job = await _sut.GetByIdAsync(jobId);
+            var job = await _sut.GetByIdAsync(jobId, stubUser);
 
             // Assert
             Assert.Equal(jobId, job?.Id);
@@ -42,12 +48,55 @@ namespace UnitTests.ManagementApp.ServiceTests
         {
             // Arrange
             int jobId = 0;
+            User stubUser = new();
 
             // Act
-            var job = await _sut.GetByIdAsync(jobId);
+            var job = await _sut.GetByIdAsync(jobId, stubUser);
 
             // Assert
             Assert.Null(job);
+        }
+
+        [Fact]
+        public async void GetByIdAsync_ShouldThrowException_WhenCurrentCompanyIsNull()
+        {
+            // Arrange
+            int jobId = 0;
+            int companyId = 0;
+            User stubUser = new();
+            Job stubJob = new()
+            {
+                Id = jobId,
+                CompanyId = companyId,
+            };
+
+            _jobRepositoryMock.Setup(x => x.GetByIdAsync(jobId)).ReturnsAsync(stubJob);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _sut.GetByIdAsync(jobId, stubUser));
+        }
+
+        [Fact]
+        public async void GetByIdAsync_ShouldThrowException_WhenCurrentCompanyDoesNotMatch()
+        {
+            // Arrange
+            int jobId = 0;
+            int companyId = 0;
+            int wrongCompanyId = 1;
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+            Job stubJob = new()
+            {
+                Id = jobId,
+                CompanyId = wrongCompanyId
+            };
+
+            _jobRepositoryMock.Setup(x => x.GetByIdAsync(jobId)).ReturnsAsync(stubJob);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _sut.GetByIdAsync(jobId, stubUser));
         }
 
         [Fact]
@@ -55,7 +104,7 @@ namespace UnitTests.ManagementApp.ServiceTests
         {
             // Arrange
             int companyId = 0;
-            Company stubCompany = new Company
+            Company stubCompany = new()
             {
                 Id = companyId,
             };
