@@ -2,7 +2,7 @@
 
 namespace Shared.Models
 {
-    public class Customer
+    public class Customer 
     {
         public int Id { get; set; }
 

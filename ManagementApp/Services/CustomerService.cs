@@ -10,10 +10,10 @@ namespace ManagementApp.Services
         private readonly ICompanyService _companyService;
         private readonly ILogger _logger;
 
-        public CustomerService(ICustomerRepository customerRepository, IUserService userService, ICompanyService companyService, ILogger<CustomerService> logger)
+        public CustomerService(ICustomerRepository customerRepository, IUserService userService, ILogger<CustomerService> logger)
         {
             _customerRepository = customerRepository;
-            _companyService = companyService;
+            _userService = userService;
             _logger = logger;
         }
 
@@ -33,20 +33,34 @@ namespace ManagementApp.Services
             return await _customerRepository.GetAllAsync(companyId);
         }
 
-        public async Task<Customer?> GetByIdAsync(int id)
+        public async Task<Customer?> GetByIdAsync(int id, User user)
         {
             // This needs to be implemented in a general sense. Can't have every method check if the user is validated.
-            var currentCompanyId = await _userService.GetCurrentCompanyIdAsync();
-            if (currentCompanyId is null)
+            var customer = await _customerRepository.GetByIdAsync(id);
+            if (customer is null)
             {
-                _logger.LogError("User is not logged in");
+                _logger.LogError("Customer could not be found.", [id]);
             }
-            return new Customer();
+            CheckForAuthorizationViolations(customer, user);
+            return customer;
         }
 
         public Task<Customer?> UpdateAsync(Customer customer)
         {
             throw new NotImplementedException();
+        }
+
+        private void CheckForAuthorizationViolations(Customer? customer, User user)
+        {
+            if (customer is null)
+            {
+                return;
+            }
+            if (user.CurrentCompanyId != customer.CompanyId)
+            {
+                _logger.LogWarning("User tried to access unauthorized resource.", [customer.Id, user.Id]);
+                throw new UnauthorizedAccessException("User is not authorized to access this customer.");
+            }
         }
     }
 }

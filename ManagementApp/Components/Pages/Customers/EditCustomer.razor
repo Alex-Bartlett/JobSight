@@ -46,9 +46,9 @@ else
 
     private async Task PopulateCurrentCustomer()
     {
-        if (Id is not null)
+        if (Id is not null && CurrentUser is not null)
         {
-            var customer = await customerService.GetByIdAsync(Id.Value);
+            var customer = await customerService.GetByIdAsync(Id.Value, CurrentUser);
             if (customer is not null)
             {
                 CurrentCustomer.Id = customer.Id;
