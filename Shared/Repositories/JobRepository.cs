@@ -1,5 +1,6 @@
 ﻿using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace Shared.Repositories
         {
             _context.Jobs.Add(job);
             await _context.SaveChangesAsync();
+            // Get the new job
+            await _context.Entry(job).ReloadAsync();
             return job;
         }
 
@@ -41,6 +44,13 @@ namespace Shared.Repositories
 
         public async Task<Job?> GetByIdAsync(int id)
         {
+            List<EntityEntry> entities = new();
+            foreach (var entityEntry in _context.ChangeTracker.Entries())
+            {
+                entities.Add(entityEntry);
+            }
+            Console.WriteLine(entities.ToString());
+            // This should probably use FindAsync
             return await _context.Jobs
                 .Where(job => job.Id == id)
                 .Include(job => job.Company)
@@ -48,9 +58,27 @@ namespace Shared.Repositories
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<Job?> UpdateAsync(Job job)
+        public async Task<Job?> UpdateAsync(Job updatedJob)
         {
-            throw new NotImplementedException();
+            var job = await _context.Jobs.FindAsync(updatedJob.Id);
+
+            if (job is null) // This needs logging, but repositories don't have loggers. So this means it probably needs to happen in the service layer.
+            {
+                return null;
+            }
+
+            job.Description = updatedJob.Description;
+            job.Address = updatedJob.Address;
+            job.CustomerId = updatedJob.CustomerId;
+            job.Reference = updatedJob.Reference;
+            job.UpdatedBy = updatedJob.UpdatedBy;
+            job.UpdatedOn = updatedJob.UpdatedOn;
+
+            await _context.SaveChangesAsync();
+            return job;
+            /*var newJob = _context.Jobs.Update(job);
+            await _context.SaveChangesAsync();
+            return newJob.Entity;*/
         }
     }
 }

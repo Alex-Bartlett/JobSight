@@ -31,20 +31,31 @@ else {
     <label for="description">Description</label>
     <InputText @bind-Value="CurrentJob.Description"></InputText>
     <label for="customer">Customer</label>
-    <InputSelect @bind-Value="CurrentJob.CustomerId" @>
-        @if (Customers is not null){
-            @foreach (Customer customer in Customers)
+    <InputSelect @bind-Value="CurrentJob.CustomerId">
+        @if (Customers is not null)
+        {
+            @foreach (var customer in Customers)
             {
-                <option value="@customer.Id">@customer.Name</option>
+                if (CurrentJob.CustomerId == customer.Id)
+                {
+                    <option value="@customer.Id" selected>@customer.Name</option>
+                }
+                else 
+                {
+                    <option value="@customer.Id">@customer.Name</option>
+                }
             }
         }
-        else {
-            <option>-- No customers --</option>
-        }
     </InputSelect>
+
+
+
+
+    
     <button type="submit">Submit</button>
 </EditForm>
 }
+
 
 @code {
     [Parameter]
@@ -77,9 +88,9 @@ else {
                     CurrentJob.Address ??= job.Address;
                     CurrentJob.Description ??= job.Description;
                     CurrentJob.Customer ??= job.Customer;
-                    CurrentJob.CustomerId = job.CustomerId;
+                    CurrentJob.CustomerId ??= job.CustomerId;
                     CurrentJob.Company ??= job.Company;
-                    CurrentJob.CompanyId = job.CompanyId;
+                    CurrentJob.CompanyId ??= job.CompanyId;
                 }
             }
             catch (UnauthorizedAccessException)
@@ -112,8 +123,7 @@ else {
 
     async Task HandleSubmit()
     {
-        // It's probably not necessary to have this in an if block, but otherwise it *may* be possible to accidentally give the job to a different company.
-        // So effectively, companyId won't be changed when editing a job.
+        // Necessary when creating a job
         if (CurrentJob.CompanyId is null)
         {
             CurrentJob.CompanyId = CurrentUser!.CurrentCompanyId!.Value;
@@ -123,7 +133,18 @@ else {
         CurrentJob.CreatedBy = CurrentUser?.NormalizedEmail;
         CurrentJob.UpdatedBy = CurrentUser?.NormalizedEmail;
 
-        var newJob = await jobService.CreateAsync(CurrentJob);
+        Job? newJob = new();
+        
+        // Whether to create a job or update an existing one
+        if (Id is null)
+        {
+            newJob = await jobService.CreateAsync(CurrentJob);
+        }
+        else
+        {
+            newJob = await jobService.UpdateAsync(CurrentJob);
+        }
+
         if (newJob is not null)
         {
             navigationManager.NavigateTo($"/job/{newJob.Id}");
@@ -132,5 +153,7 @@ else {
         {
             throw new Exception("Job failed to create");
         }
+       
+        
     }
 }

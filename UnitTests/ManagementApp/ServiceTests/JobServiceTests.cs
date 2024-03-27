@@ -4,6 +4,7 @@ using Moq;
 using Shared.Repositories;
 using Shared.Models;
 using System.ComponentModel.Design;
+using Castle.Core.Resource;
 
 namespace UnitTests.ManagementApp.ServiceTests
 {
@@ -12,10 +13,12 @@ namespace UnitTests.ManagementApp.ServiceTests
         private readonly JobService _sut;
         private readonly Mock<IJobRepository> _jobRepositoryMock = new();
         private readonly Mock<ICompanyService> _companyServiceMock = new();
+        private readonly Mock<ICustomerService> _customerServiceMock = new();
+        private readonly Mock<IUserService> _userServiceMock = new();
         private readonly Mock<ILogger<JobService>> _jobServiceLoggerMock = new();
         public JobServiceTests()
         {
-            _sut = new JobService(_jobRepositoryMock.Object, _companyServiceMock.Object, _jobServiceLoggerMock.Object);
+            _sut = new JobService(_jobRepositoryMock.Object, _companyServiceMock.Object, _customerServiceMock.Object, _userServiceMock.Object, _jobServiceLoggerMock.Object);
         }
 
         [Fact]
@@ -148,17 +151,25 @@ namespace UnitTests.ManagementApp.ServiceTests
         public async void CreateAsync_ShouldReturnNewJob_WhenJobIsValid()
         {
             // Arrange
+            int companyId = 1;
+            int customerId = 1;
             Company stubCompany = new()
             {
-                Id = 1,
+                Id = companyId,
+            };
+
+            Customer stubCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = companyId
             };
 
             Job mockJob = new()
             {
                 Reference = "Test",
-                CustomerId = 1,
-                CompanyId = 1,
-                Customer = new Customer(),
+                CustomerId = customerId,
+                CompanyId = companyId,
+                Customer = stubCustomer,
                 Company = stubCompany
             };
 
@@ -172,6 +183,15 @@ namespace UnitTests.ManagementApp.ServiceTests
                 Company = mockJob.Company
             };
 
+            List<Customer> mockCustomerList = [stubCustomer];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
             _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
 
             // Act
@@ -180,6 +200,283 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             // Assert
             Assert.Equivalent(mockJob, resultJob, strict: true);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenUserIsNull()
+        {
+            // Arrange
+            int companyId = 1;
+            int customerId = 1;
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer stubCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = companyId
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = customerId,
+                CompanyId = companyId,
+                Customer = stubCustomer,
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            List<Customer> mockCustomerList = [stubCustomer];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(() => null);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+
+            // Assert
+            Assert.Null(resultJob);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenCurrentCompanyIsNull()
+        {
+            // Arrange
+            int companyId = 1;
+            int customerId = 1;
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer stubCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = companyId
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = customerId,
+                CompanyId = companyId,
+                Customer = stubCustomer,
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            List<Customer> mockCustomerList = [stubCustomer];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = null
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+
+            // Assert
+            Assert.Null(resultJob);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenCurrentCompanyHasNoCustomers()
+        {
+            // Arrange
+            int companyId = 1;
+            int customerId = 1;
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer stubCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = companyId
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = customerId,
+                CompanyId = companyId,
+                Customer = stubCustomer,
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            List<Customer> mockCustomerList = [];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+
+            // Assert
+            Assert.Null(resultJob);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenCustomerDoesNotBelongToCurrentCompany()
+        {
+            // Arrange
+            int companyId = 1;
+            int customerId = 1;
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer invalidCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = 2,
+            };
+
+            Customer validCustomer = new()
+            {
+                Id = 2,
+                CompanyId = companyId
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = customerId,
+                CompanyId = companyId,
+                Customer = invalidCustomer,
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            List<Customer> mockCustomerList = [validCustomer];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+
+            // Assert
+            Assert.Null(resultJob);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenJobCompanyDoesNotMatchCurrentCompany()
+        {
+            // Arrange
+            int companyId = 1;
+            int wrongCompanyId = 2;
+            int customerId = 1;
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer stubCustomer = new()
+            {
+                Id = customerId,
+                CompanyId = companyId
+            };
+
+            Job mockJob = new()
+            {
+                Reference = "Test",
+                CustomerId = customerId,
+                CompanyId = wrongCompanyId,
+                Customer = stubCustomer,
+                Company = stubCompany
+            };
+
+            Job stubJob = new()
+            {
+                Id = 1,
+                Reference = mockJob.Reference,
+                CustomerId = mockJob.CustomerId,
+                CompanyId = mockJob.CompanyId,
+                Customer = mockJob.Customer,
+                Company = mockJob.Company
+            };
+
+            List<Customer> mockCustomerList = [stubCustomer];
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerServiceMock.Setup(x => x.GetAllAsync(companyId)).ReturnsAsync(mockCustomerList);
+            _jobRepositoryMock.Setup(x => x.AddAsync(mockJob)).ReturnsAsync(stubJob);
+
+            // Act
+            var resultJob = await _sut.CreateAsync(mockJob);
+
+            // Assert
+            Assert.Null(resultJob);
         }
     }
 }

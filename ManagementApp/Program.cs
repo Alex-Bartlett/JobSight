@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("Development") ?? throw new InvalidOperationException("Connection string 'Development' not found."); // I don't like that the database connection string has to be matching in both Infrastructure and THIS project. They should exist only in one file. Look into changing this at some point, please!! It will really inconvenience development once deployed to production. 
 
-builder.Services.AddDbContext<JobSightDbContext>(opt => opt.UseNpgsql(connectionString));
+builder.Services.AddDbContext<JobSightDbContext>(opt => opt.UseNpgsql(connectionString).EnableSensitiveDataLogging()); ;
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)

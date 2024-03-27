@@ -46,7 +46,7 @@ else
 
     private async Task PopulateCurrentCustomer()
     {
-        if (Id is not null)
+        if (Id is not null && CurrentUser is not null)
         {
             var customer = await customerService.GetByIdAsync(Id.Value);
             if (customer is not null)
@@ -61,6 +61,23 @@ else
 
     public async Task HandleSubmit()
     {
-        
+        if (CurrentCustomer.CompanyId is null)
+        {
+            CurrentCustomer.CompanyId = CurrentUser!.CurrentCompanyId!.Value;
+        }
+
+        // Add auditing (see JobSightDbContext)
+        CurrentCustomer.CreatedBy = CurrentUser?.NormalizedEmail;
+        CurrentCustomer.UpdatedBy = CurrentUser?.NormalizedEmail;
+
+        // var newCustomer = await customerService.CreateAsync(CurrentCustomer);
+        // if (newCustomer is not null)
+        // {
+        //     navigationManager.NavigateTo($"/job/{newJob.Id}");
+        // }
+        // else
+        // {
+        //     throw new Exception("Job failed to create");
+        // }
     }
 }

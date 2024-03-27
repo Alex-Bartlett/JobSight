@@ -1,5 +1,6 @@
 ﻿using Shared.Models;
 using Shared.Repositories;
+using System.Security.Cryptography;
 
 namespace ManagementApp.Services
 {
@@ -7,12 +8,16 @@ namespace ManagementApp.Services
     {
         private readonly IJobRepository _jobRepository;
         private ICompanyService _companyService;
+        private ICustomerService _customerService;
+        private IUserService _userService;
         private readonly ILogger _logger;
 
-        public JobService(IJobRepository jobRepository, ICompanyService companyService, ILogger<JobService> logger)
+        public JobService(IJobRepository jobRepository, ICompanyService companyService, ICustomerService customerService, IUserService userService, ILogger<JobService> logger)
         {
             _jobRepository = jobRepository;
             _companyService = companyService;
+            _customerService = customerService;
+            _userService = userService;
             _logger = logger;
         }
 
@@ -34,9 +39,15 @@ namespace ManagementApp.Services
 
         public async Task<Job?> CreateAsync(Job job)
         {
+            if (!await IsValid(job))
+            {
+                _logger.LogError("Job is not valid.", [job]);
+                return null;
+            }
+
             var newJob = await _jobRepository.AddAsync(job);
 
-            if (job is null)
+            if (newJob is null)
             {
                 _logger.LogError("Job could not be created.", [job]);
             }
@@ -63,14 +74,64 @@ namespace ManagementApp.Services
             }
         }
 
-        public Task<Job?> UpdateAsync(Job job)
+        public async Task<Job?> UpdateAsync(Job job)
         {
-            throw new NotImplementedException();
+            if (!await IsValid(job))
+            {
+                _logger.LogError("Job is not valid.", [job]);
+                return null;
+            }
+
+            var updatedJob = await _jobRepository.UpdateAsync(job);
+
+            if (updatedJob is null)
+            {
+                _logger.LogError("Job could not be updated", [job]);
+            }
+
+            return updatedJob;
         }
 
         public void DeleteAsync(int jobId)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<bool> IsValid(Job job)
+        {
+            var user = await _userService.GetCurrentUserAsync();
+            if (user is null)
+            {
+                _logger.LogError("User is null. Cannot validate job.", [job]);
+                return false;
+            }
+            else if (user.CurrentCompanyId is null)
+            {
+                _logger.LogError("Current company is null. Cannot validate job.", [job, user]);
+                return false;
+            }
+
+            var customers = await _customerService.GetAllAsync(user.CurrentCompanyId.Value);
+            if (customers is null)
+            {
+                _logger.LogError("Current company has no customers. Cannot validate job.", [job, user]);
+                return false;
+            }
+
+            // If customerId is not in the customer list of the company, throw an exception
+            if (!customers.Any(c => c.Id == job.CustomerId))
+            {
+                _logger.LogError("Customer does not belong to current company. Potential overposting attempt.", [job, user]);
+                return false;
+            }
+
+            if (job.CompanyId != user.CurrentCompanyId)
+            {
+                _logger.LogError("Job does not belong to current company. Potential overposting attempt.", [job, user]);
+                return false;
+            }
+
+            return true;
         }
     }
 }

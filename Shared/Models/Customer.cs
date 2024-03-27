@@ -2,7 +2,7 @@
 
 namespace Shared.Models
 {
-    public class Customer
+    public class Customer : AuditableEntity
     {
         public int Id { get; set; }
 
@@ -11,8 +11,7 @@ namespace Shared.Models
         public string? Address { get; set; }
         public string? Postcode { get; set; }
         [Required]
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
         public Company? Company { get; set; }
-
     }
 }
