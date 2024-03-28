@@ -8,8 +8,6 @@
 
 <h3>Developer Settings</h3>
 
-<Toasts Messages="messages" AutoHide="true" Delay="3000" Placement="ToastsPlacement.TopRight" />
-
 @*Both AuthorizeView and EditForm have a default context of 'context'. It needs to be overridden to prevent ambiguity. https://stackoverflow.com/a/77385623*@
 <AuthorizeView Context="AuthContext">
     @AuthContext.User.Identity?.Name;
@@ -66,26 +64,9 @@
             if (res is not null)
             {
                 // Success
-                //toaster!.MakeToast(ToastType.Success, "Company updated successfully.");
-                MakeToast(ToastType.Success, "Company updated successfully.");
                 return;
             }
         }
         // Fail
-        //toaster!.MakeToast(ToastType.Danger, "Failed to update company.");
-        //toastService.ShowError("Failed to updated company.");
-    }
-
-    List<ToastMessage> messages = new();
-
-    private void MakeToast(ToastType toastType, string message, string? title = null, string? helpText = null)
-    {
-        messages.Add(new ToastMessage
-            {
-                Type = toastType,
-                Message = message,
-                Title = title,
-                HelpText = helpText,
-            });
     }
 }
