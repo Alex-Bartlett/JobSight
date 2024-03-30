@@ -5,6 +5,9 @@
 @inject ICustomerService customerService;
 @inject IUserService userService;
 
+
+<FormErrorBanner @ref="formErrorBanner" OnNotificationSent="@RefreshComponents"></FormErrorBanner>
+
 @if (Id is null)
 {
     <h3>Create job</h3>
@@ -52,8 +55,19 @@ else {
 
 
     
-    <button type="submit">Submit</button>
+    <button type="submit">
+        @if (Id is null)
+        {
+            <span>Create</span>
+        }
+        else
+        {
+            <span>Update</span>
+        }
+        </button>
 </EditForm>
+
+
 }
 
 
@@ -69,6 +83,8 @@ else {
     public User? CurrentUser;
 
     public bool Unauthorized = false;
+
+    public FormErrorBanner formErrorBanner;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -134,7 +150,7 @@ else {
         CurrentJob.UpdatedBy = CurrentUser?.NormalizedEmail;
 
         Job? newJob = new();
-        
+
         // Whether to create a job or update an existing one
         if (Id is null)
         {
@@ -149,11 +165,15 @@ else {
         {
             navigationManager.NavigateTo($"/job/{newJob.Id}");
         }
-        else
+        else // Error handling
         {
-            throw new Exception("Job failed to create");
-        }
-       
-        
+            await formErrorBanner.ShowError("Error creating/updating job.");
+        }        
+    }
+
+    void RefreshComponents()
+    {
+        // I have no idea why this is necessary for the notification to update, but apparently it is.
+        StateHasChanged();
     }
 }
