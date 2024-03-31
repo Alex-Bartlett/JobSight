@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shared.Models
 {
-    public class Job : AuditableEntity
+    public class Job : CompanySpecificEntity
     {
         public int Id { get; set; }
         [Required]
@@ -13,9 +13,6 @@ namespace Shared.Models
         public string? Description { get; set; }
         [Required]
         public int? CustomerId { get; set; }
-        [Required]
-        public int? CompanyId { get; set; }
         public virtual Customer? Customer { get; set; }
-        public virtual Company? Company { get; set; }
     }
 }

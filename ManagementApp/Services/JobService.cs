@@ -33,7 +33,7 @@ namespace ManagementApp.Services
             {
                 _logger.LogWarning("Job could not be found.", [jobId]);
             }
-            CheckForAuthorizationViolations(job, user);
+            AccessValidation.CheckForAuthorizationViolations(job, user, _logger);
             return job;
         }
 
@@ -53,25 +53,6 @@ namespace ManagementApp.Services
             }
 
             return newJob;
-        }
-
-        /// <summary>
-        /// Checks if the user's current company matches the job's company. If not, throws an exception.
-        /// </summary>
-        /// <param name="job">The job to check</param>
-        /// <param name="user">The current user</param>
-        /// <exception cref="UnauthorizedAccessException">Thrown if the user is not allowed to access the job.</exception>
-        private void CheckForAuthorizationViolations(Job? job, User user)
-        {
-            if (job is null)
-            {
-                return;
-            }
-            if (user.CurrentCompanyId != job.CompanyId)
-            {
-                _logger.LogWarning("User tried to access unauthorized resource.", [job.Id, user.Id]);
-                throw new UnauthorizedAccessException("User is not authorized to access this job.");
-            }
         }
 
         public async Task<Job?> UpdateAsync(Job job)
@@ -100,38 +81,17 @@ namespace ManagementApp.Services
         private async Task<bool> IsValid(Job job)
         {
             var user = await _userService.GetCurrentUserAsync();
-            if (user is null)
-            {
-                _logger.LogError("User is null. Cannot validate job.", [job]);
-                return false;
-            }
-            else if (user.CurrentCompanyId is null)
-            {
-                _logger.LogError("Current company is null. Cannot validate job.", [job, user]);
-                return false;
-            }
 
-            var customers = await _customerService.GetAllAsync(user.CurrentCompanyId.Value);
-            if (customers is null)
+            if (user is not null && user.CurrentCompanyId is not null)
             {
-                _logger.LogError("Current company has no customers. Cannot validate job.", [job, user]);
-                return false;
+                var customers = await _customerService.GetAllAsync(user.CurrentCompanyId.Value);
+                return AccessValidation.IsValid(job, user, _logger, customers);
             }
-
-            // If customerId is not in the customer list of the company, throw an exception
-            if (!customers.Any(c => c.Id == job.CustomerId))
+            else
             {
-                _logger.LogError("Customer does not belong to current company. Potential overposting attempt.", [job, user]);
-                return false;
+                // If user is null, use the generic IsValid method. An error is now expected, but is delivered properly.
+                return AccessValidation.IsValid(job, user, _logger);
             }
-
-            if (job.CompanyId != user.CurrentCompanyId)
-            {
-                _logger.LogError("Job does not belong to current company. Potential overposting attempt.", [job, user]);
-                return false;
-            }
-
-            return true;
         }
     }
 }

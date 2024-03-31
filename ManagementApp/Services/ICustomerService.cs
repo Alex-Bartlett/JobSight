@@ -13,7 +13,7 @@ namespace ManagementApp.Services
         /// <returns>The customer if found, or null if not found</returns>
         /// <exception cref="UnauthorizedAccessException">Thrown if the customer does not belong to the current user's company</exception>
         Task<Customer?> GetByIdAsync(int id, User user);
-        Task<Customer?> AddAsync(Customer customer);
+        Task<Customer?> CreateAsync(Customer customer);
         Task<Customer?> UpdateAsync(Customer customer);
         Task DeleteAsync(int id);
     }

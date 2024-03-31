@@ -10,14 +10,15 @@ namespace ManagementApp.Services
         private readonly ICompanyService _companyService;
         private readonly ILogger _logger;
 
-        public CustomerService(ICustomerRepository customerRepository, IUserService userService, ILogger<CustomerService> logger)
+        public CustomerService(ICustomerRepository customerRepository, IUserService userService, ICompanyService companyService, ILogger<CustomerService> logger)
         {
             _customerRepository = customerRepository;
             _userService = userService;
+            _companyService = companyService;
             _logger = logger;
         }
 
-        public Task<Customer?> AddAsync(Customer customer)
+        public async Task<Customer?> CreateAsync(Customer customer)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +42,7 @@ namespace ManagementApp.Services
             {
                 _logger.LogError("Customer could not be found.", [id]);
             }
-            CheckForAuthorizationViolations(customer, user);
+            AccessValidation.CheckForAuthorizationViolations(customer, user, _logger);
             return customer;
         }
 
@@ -50,17 +51,10 @@ namespace ManagementApp.Services
             throw new NotImplementedException();
         }
 
-        private void CheckForAuthorizationViolations(Customer? customer, User user)
+        private async Task<bool> IsValid(Customer customer)
         {
-            if (customer is null)
-            {
-                return;
-            }
-            if (user.CurrentCompanyId != customer.CompanyId)
-            {
-                _logger.LogWarning("User tried to access unauthorized resource.", [customer.Id, user.Id]);
-                throw new UnauthorizedAccessException("User is not authorized to access this customer.");
-            }
+            var user = await _userService.GetCurrentUserAsync();
+            return AccessValidation.IsValid(customer, user, _logger);
         }
     }
 }

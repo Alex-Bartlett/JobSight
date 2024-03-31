@@ -35,7 +35,7 @@ else {
         Label="Address"/>
     <HxInputText @bind-Value="CurrentJob.Description"
         Label="Description"/>
-    <!--Compromise for broken HxSelect (value is set to index rather than given value)-->
+    @*Compromise for broken HxSelect (value is set to index rather than given value)*@
     <div class="form-group position-relative">
         <label class="form-label" for="customer">Customer</label>
         <InputSelect @bind-Value="CurrentJob.CustomerId" class="form-select">

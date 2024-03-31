@@ -17,11 +17,12 @@ namespace UnitTests.ManagementApp.ServiceTests
         private readonly CustomerService _sut;
         private readonly Mock<ICustomerRepository> _customerRepositoryMock = new();
         private readonly Mock<IUserService> _userServiceMock = new();
+        private readonly Mock<ICompanyService> _companyServiceMock = new();
         private readonly Mock<ILogger<CustomerService>> _loggerMock = new();
 
         public CustomerServiceTests()
         {
-            _sut = new CustomerService(_customerRepositoryMock.Object, _userServiceMock.Object, _loggerMock.Object);
+            _sut = new CustomerService(_customerRepositoryMock.Object, _userServiceMock.Object, _companyServiceMock.Object, _loggerMock.Object);
         }
 
         [Fact]
