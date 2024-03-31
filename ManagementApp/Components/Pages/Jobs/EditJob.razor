@@ -26,36 +26,29 @@ else if (Unauthorized)
     <p>You are not authorized to access this resource.</p>
 }
 else {
-<EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm">
-    <label for="reference">Reference</label>
-    <InputText @bind-Value="CurrentJob.Reference"></InputText>
-    <label for="address">Address</label>
-    <InputText @bind-Value="CurrentJob.Address"></InputText>
-    <label for="description">Description</label>
-    <InputText @bind-Value="CurrentJob.Description"></InputText>
-    <label for="customer">Customer</label>
-    <InputSelect @bind-Value="CurrentJob.CustomerId">
-        @if (Customers is not null)
-        {
-            @foreach (var customer in Customers)
+    <div class="container container-fluid p-0 ms-0">
+        <div class="row">
+<EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm" class="col-6">
+    <HxInputText @bind-Value="CurrentJob.Reference"
+        Label="Reference"/>
+    <HxInputText @bind-Value="CurrentJob.Address"
+        Label="Address"/>
+    <HxInputText @bind-Value="CurrentJob.Description"
+        Label="Description"/>
+    <!--Compromise for broken HxSelect (value is set to index rather than given value)-->
+    <div class="form-group position-relative">
+        <label class="form-label" for="customer">Customer</label>
+        <InputSelect @bind-Value="CurrentJob.CustomerId" class="form-select">
+            @if (Customers is not null)
             {
-                if (CurrentJob.CustomerId == customer.Id)
-                {
-                    <option value="@customer.Id" selected>@customer.Name</option>
-                }
-                else 
+                foreach (var customer in Customers)
                 {
                     <option value="@customer.Id">@customer.Name</option>
                 }
             }
-        }
-    </InputSelect>
-
-
-
-
-    
-    <button type="submit">
+        </InputSelect>
+    </div>
+    <HxButton type="submit" Color="ThemeColor.Primary">
         @if (Id is null)
         {
             <span>Create</span>
@@ -64,9 +57,10 @@ else {
         {
             <span>Update</span>
         }
-        </button>
+        </HxButton>
 </EditForm>
-
+        </div>
+    </div>
 
 }
 

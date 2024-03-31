@@ -1,3 +1,4 @@
+using Havit.Blazor.Components.Web;
 using Infrastructure;
 using ManagementApp.Components;
 using ManagementApp.Components.Account;
@@ -51,6 +52,8 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddHxServices();
 
 var app = builder.Build();
 

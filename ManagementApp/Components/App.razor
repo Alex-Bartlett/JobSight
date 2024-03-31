@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Havit.Blazor.Components.Web.Bootstrap
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -13,6 +14,17 @@
     <link rel="stylesheet" href="ManagementApp.styles.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+
+    @*Blazor bootstrap library from https://havit.blazor.eu/*@
+    <!-- Bootstrap CSS (you can set the Bootstrap flavor with a parameter) -->
+    @((MarkupString)HxSetup.RenderBootstrapCssReference())
+
+    <!-- Default values for additional CSS Variables (+ import Bootstrap Icons) -->
+    <link href="_content/Havit.Blazor.Components.Web.Bootstrap/defaults.css" rel="stylesheet" />
+
+    <!-- Blazor CSS Isolation -->
+    <link href="ManagementApp.styles.css" rel="stylesheet" />
+
     <HeadOutlet />
 </head>
 
@@ -24,7 +36,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    @*Part of Havit blazor*@
+    <!-- JavaScript Bundle with Popper -->
+    @((MarkupString)HxSetup.RenderBootstrapJavaScriptReference())
 </body>
 
 </html>
