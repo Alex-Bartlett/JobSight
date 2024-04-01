@@ -56,8 +56,6 @@ namespace Shared.Repositories
             customer.Name = updatedCustomer.Name;
             customer.Address = updatedCustomer.Address;
             customer.Postcode = updatedCustomer.Postcode;
-            customer.UpdatedBy = updatedCustomer.UpdatedBy;
-            customer.UpdatedOn = updatedCustomer.UpdatedOn;
             // I can't see us ever wanting to change the company of a customer. But if we do, we'll need to add that here.
 
             await _context.SaveChangesAsync();
