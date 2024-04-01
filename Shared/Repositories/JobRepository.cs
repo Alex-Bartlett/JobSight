@@ -65,8 +65,6 @@ namespace Shared.Repositories
             job.Address = updatedJob.Address;
             job.CustomerId = updatedJob.CustomerId;
             job.Reference = updatedJob.Reference;
-            job.UpdatedBy = updatedJob.UpdatedBy;
-            job.UpdatedOn = updatedJob.UpdatedOn;
 
             await _context.SaveChangesAsync();
             return job;
