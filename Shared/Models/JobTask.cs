@@ -2,7 +2,7 @@
 
 namespace Shared.Models
 {
-    public class JobTask
+    public class JobTask : AuditableEntity
     {
         [Required]
         public int Id { get; set; }
@@ -12,6 +12,8 @@ namespace Shared.Models
         [Required]
         public int JobId { get; set; }
         public virtual Job? Job { get; set; }
+        public string? UserId { get; set; }
         public virtual User? User { get; set; }
+        public List<JobTaskImage>? Images { get; set; }
     }
 }
