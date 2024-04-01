@@ -88,7 +88,7 @@ namespace UnitTests.ManagementApp.ServiceTests
             _customerRepositoryMock.Setup(x => x.GetByIdAsync(customerId)).ReturnsAsync(stubCustomer);
 
             // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(async() => await _sut.GetByIdAsync(customerId, stubUser));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _sut.GetByIdAsync(customerId, stubUser));
         }
 
         [Fact]
@@ -158,6 +158,159 @@ namespace UnitTests.ManagementApp.ServiceTests
 
             // Assert
             Assert.Equal(expectedCustomerId, resultId);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNewCustomer_WhenCustomerIsValid()
+        {
+            // Arrange
+            int companyId = 1;
+
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer mockCustomer = new()
+            {
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            Customer mockCustomerComplete = new()
+            {
+                Id = 1,
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerRepositoryMock.Setup(x => x.AddAsync(mockCustomer)).ReturnsAsync(mockCustomerComplete);
+
+            // Act
+            var result = await _sut.CreateAsync(mockCustomer);
+            mockCustomer.Id = result!.Id;
+
+            // Assert
+            Assert.Equivalent(mockCustomer, result, strict: true);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenUserIsNull()
+        {
+            // Arrange
+            int companyId = 1;
+
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer mockCustomer = new()
+            {
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            Customer mockCustomerComplete = new()
+            {
+                Id = 1,
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(() => null);
+            _customerRepositoryMock.Setup(x => x.AddAsync(mockCustomer)).ReturnsAsync(mockCustomerComplete);
+
+            // Act
+            var result = await _sut.CreateAsync(mockCustomer);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenCurrentCompanyIsNull()
+        {
+            // Arrange
+            int companyId = 1;
+
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer mockCustomer = new()
+            {
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            Customer mockCustomerComplete = new()
+            {
+                Id = 1,
+                Name = "Test Customer",
+                CompanyId = companyId
+            };
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = null
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerRepositoryMock.Setup(x => x.AddAsync(mockCustomer)).ReturnsAsync(mockCustomerComplete);
+
+            // Act
+            var result = await _sut.CreateAsync(mockCustomer);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async void CreateAsync_ShouldReturnNull_WhenCustomerCompanyDoesNotMatchCurrentCompany()
+        {
+            // Arrange
+            int companyId = 1;
+            int wrongCompanyId = 2;
+
+            Company stubCompany = new()
+            {
+                Id = companyId,
+            };
+
+            Customer mockCustomer = new()
+            {
+                Name = "Test Customer",
+                CompanyId = wrongCompanyId
+            };
+
+            Customer mockCustomerComplete = new()
+            {
+                Id = 1,
+                Name = mockCustomer.Name,
+                CompanyId = mockCustomer.CompanyId
+            };
+
+            User stubUser = new()
+            {
+                CurrentCompanyId = companyId
+            };
+
+            _userServiceMock.Setup(x => x.GetCurrentUserAsync()).ReturnsAsync(stubUser);
+            _customerRepositoryMock.Setup(x => x.AddAsync(mockCustomer)).ReturnsAsync(mockCustomerComplete);
+
+            // Act
+            var result = await _sut.CreateAsync(mockCustomer);
+
+            // Assert
+            Assert.Null(result);
         }
     }
 }

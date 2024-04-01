@@ -1,14 +1,14 @@
-﻿@page "/job/{id:int}"
-@inject IJobService jobService
+﻿@page "/customer/{id:int}"
+@inject ICustomerService customerService
 @inject IUserService userService
 @inject NavigationManager navigationManager
 
-@if (Job is null)
+@if (Customer is null)
 {
-    <h3>Job not found</h3>
+    <h3>Customer not found</h3>
     @if (CurrentUser?.CurrentCompany is not null)
     {
-        <p>A job for @CurrentUser.CurrentCompany.Name could not be found at this address.</p>
+        <p>A customer for @CurrentUser.CurrentCompany.Name could not be found at this address.</p>
     }
     else
     {
@@ -18,20 +18,17 @@
 }
 else
 {
-    <h3>Job</h3>
-    <h4><span><b>Reference: </b></span>@Job.Reference</h4>
-    <p><span><b>Description: </b></span>@Job.Description</p>
-    <p><span><b>Address: </b></span>@Job.Address</p>
-    <p><span><b>Customer: </b></span>@Job.Customer!.Name</p>
-
-
+    <h3>Customer</h3>
+    <h4><span><b>Name: </b></span>@Customer.Name</h4>
+    <p><span><b>Address: </b></span>@Customer.Address</p>
+    <p><span><b>Postcode: </b></span>@Customer.Postcode</p>
 }
 
 @code {
     [Parameter]
     public int? Id { get; set; } = null;
 
-    public Job? Job;
+    public Customer? Customer;
     public User? CurrentUser;
 
     protected override async Task OnParametersSetAsync()
@@ -42,11 +39,11 @@ else
         {
             try
             {
-                Job = await jobService.GetByIdAsync(Id.Value, CurrentUser);
+                Customer = await customerService.GetByIdAsync(Id.Value, CurrentUser);
             }
             catch (UnauthorizedAccessException)
             {
-                Job = null;
+                Customer = null;
             }
         }
     }

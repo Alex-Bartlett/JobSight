@@ -20,7 +20,19 @@ namespace ManagementApp.Services
 
         public async Task<Customer?> CreateAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            if (!await IsValid(customer))
+            {
+                _logger.LogError("Customer is not valid.", [customer]);
+                return null;
+            }
+
+            var newCustomer = await _customerRepository.AddAsync(customer);
+            if (newCustomer == null)
+            {
+                _logger.LogError("Customer could not be created.", [customer]);
+            }
+
+            return newCustomer;
         }
 
         public Task DeleteAsync(int id)
@@ -46,9 +58,22 @@ namespace ManagementApp.Services
             return customer;
         }
 
-        public Task<Customer?> UpdateAsync(Customer customer)
+        public async Task<Customer?> UpdateAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            if (!await IsValid(customer))
+            {
+                _logger.LogError("Customer is not valid.", [customer]);
+                return null;
+            }
+
+            var updatedCustomer = await _customerRepository.UpdateAsync(customer);
+
+            if (updatedCustomer is null)
+            {
+                _logger.LogError("Customer could not be updated", [customer]);
+            }
+
+            return updatedCustomer;
         }
 
         private async Task<bool> IsValid(Customer customer)

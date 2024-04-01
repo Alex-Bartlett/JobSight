@@ -2,13 +2,21 @@
 @inject ICustomerService customerService
 @inject IUserService userService
 
+@attribute [StreamRendering];
+
 <h3>Customers</h3>
-@if (Customers.Count() == 0)
+
+@if (Customers == null)
+{
+    <span>Loading...</span>
+}
+else if (Customers.Count() == 0)
 {
     <p>No customers found. <a href="/customer/edit">Add a customer?</a></p>
 }
 else
 {
+    <a href="/customer/edit">New customer</a>
     <table>
         <thead>
             <tr>
@@ -39,6 +47,9 @@ else
                         </td>
                         <td>
                             @customer.Address
+                        </td>
+                        <td>
+                            <a href="/customer/edit/@customer.Id">Edit</a>
                         </td>
                     </tr>    
             }

@@ -1,8 +1,11 @@
-﻿@page "/customers/edit";
-@page "/customers/edit/{Id:int}"
+﻿@page "/customer/edit";
+@page "/customer/edit/{Id:int}"
 
+@inject NavigationManager navigationManager
 @inject ICustomerService customerService
 @inject IUserService userService
+
+<FormErrorBanner @ref="formErrorBanner" OnNotificationSent="@RefreshComponents"></FormErrorBanner>
 
 @if (Id is null)
 {
@@ -13,16 +16,40 @@ else
     <h3>Editing customer</h3>
 }
 
-<EditForm Model="CurrentCustomer" OnSubmit="HandleSubmit" FormName="CustomerForm">
-    <label for="name">Name</label>
-    <InputText @bind-Value="CurrentCustomer.Name"></InputText>
-    <label for="address">Address</label>
-    <InputText @bind-Value="CurrentCustomer.Address"></InputText>
-    <label for="postcode">Postcode</label>
-    <InputText @bind-Value="CurrentCustomer.Postcode"></InputText>
-    <button type="submit">Submit</button>
-</EditForm>
 
+@if (CurrentUser is null)
+{
+    <p>Please sign in.</p>
+}
+else if (Unauthorized)
+{
+    <p>You are not authorized to access this resource.</p>
+}
+else
+{
+    <div class="container container-fluid p-0 ms-0">
+        <div class="row">
+            <EditForm Model="CurrentCustomer" OnSubmit="HandleSubmit" FormName="CustomerForm" class="col-6">
+                <HxInputText @bind-Value="CurrentCustomer.Name"
+                    Label="Name"/>
+                <HxInputText @bind-Value="CurrentCustomer.Address"
+                    Label="Address"/>
+                <HxInputText @bind-Value="CurrentCustomer.Postcode"
+                    Label="Postcode"/>
+                <HxButton type="submit" Color="ThemeColor.Primary">
+                    @if (Id is null)
+                    {
+                        <span>Create</span>
+                    }
+                    else
+                    {
+                        <span>Update</span>
+                    }
+                </HxButton>
+            </EditForm>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
@@ -32,10 +59,35 @@ else
 
     public User? CurrentUser;
 
+    public bool Unauthorized = false;
+
+    public FormErrorBanner formErrorBanner;
+
 
     protected override async Task OnParametersSetAsync()
     {
         await InitializeData();
+
+        if (Id is not null && CurrentUser is not null)
+        {
+            // Try to get customer with id
+            try
+            {
+                var customer = await customerService.GetByIdAsync(Id.Value, CurrentUser);
+
+                if (customer is not null)
+                {
+                    CurrentCustomer.Id = customer.Id;
+                    CurrentCustomer.Name ??= customer.Name;
+                    CurrentCustomer.Address ??= customer.Address;
+                    CurrentCustomer.Postcode ??= customer.Postcode;
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Unauthorized = true;
+            }
+        }
     }
 
     private async Task InitializeData()
@@ -61,6 +113,7 @@ else
 
     public async Task HandleSubmit()
     {
+        // Set company id to current company if creating a new customer
         if (CurrentCustomer.CompanyId is null)
         {
             CurrentCustomer.CompanyId = CurrentUser!.CurrentCompanyId!.Value;
@@ -70,14 +123,30 @@ else
         CurrentCustomer.CreatedBy = CurrentUser?.NormalizedEmail;
         CurrentCustomer.UpdatedBy = CurrentUser?.NormalizedEmail;
 
-        // var newCustomer = await customerService.CreateAsync(CurrentCustomer);
-        // if (newCustomer is not null)
-        // {
-        //     navigationManager.NavigateTo($"/job/{newJob.Id}");
-        // }
-        // else
-        // {
-        //     throw new Exception("Job failed to create");
-        // }
+        Customer? newCustomer;
+
+        if (Id is null)
+        {
+            newCustomer = await customerService.CreateAsync(CurrentCustomer);
+        }
+        else
+        {
+            newCustomer = await customerService.UpdateAsync(CurrentCustomer);
+        }
+
+        if (newCustomer is not null)
+        {
+            navigationManager.NavigateTo($"/customer/{newCustomer.Id}");
+        }
+        else // Error handling
+        {
+            await formErrorBanner.ShowError("Error creating/updating customer.");
+        }
+    }
+
+    void RefreshComponents()
+    {
+        // I have no idea why this is necessary for the notification to update, but apparently it is.
+        StateHasChanged();
     }
 }

@@ -44,12 +44,6 @@ namespace Shared.Repositories
 
         public async Task<Job?> GetByIdAsync(int id)
         {
-            List<EntityEntry> entities = new();
-            foreach (var entityEntry in _context.ChangeTracker.Entries())
-            {
-                entities.Add(entityEntry);
-            }
-            Console.WriteLine(entities.ToString());
             // This should probably use FindAsync
             return await _context.Jobs
                 .Where(job => job.Id == id)
@@ -62,7 +56,7 @@ namespace Shared.Repositories
         {
             var job = await _context.Jobs.FindAsync(updatedJob.Id);
 
-            if (job is null) // This needs logging, but repositories don't have loggers. So this means it probably needs to happen in the service layer.
+            if (job is null) // This needs logging in the service layer.
             {
                 return null;
             }
@@ -76,9 +70,6 @@ namespace Shared.Repositories
 
             await _context.SaveChangesAsync();
             return job;
-            /*var newJob = _context.Jobs.Update(job);
-            await _context.SaveChangesAsync();
-            return newJob.Entity;*/
         }
     }
 }

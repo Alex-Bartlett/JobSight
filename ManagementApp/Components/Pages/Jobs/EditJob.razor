@@ -28,37 +28,37 @@ else if (Unauthorized)
 else {
     <div class="container container-fluid p-0 ms-0">
         <div class="row">
-<EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm" class="col-6">
-    <HxInputText @bind-Value="CurrentJob.Reference"
-        Label="Reference"/>
-    <HxInputText @bind-Value="CurrentJob.Address"
-        Label="Address"/>
-    <HxInputText @bind-Value="CurrentJob.Description"
-        Label="Description"/>
-    @*Compromise for broken HxSelect (value is set to index rather than given value)*@
-    <div class="form-group position-relative">
-        <label class="form-label" for="customer">Customer</label>
-        <InputSelect @bind-Value="CurrentJob.CustomerId" class="form-select">
-            @if (Customers is not null)
-            {
-                foreach (var customer in Customers)
-                {
-                    <option value="@customer.Id">@customer.Name</option>
-                }
-            }
-        </InputSelect>
-    </div>
-    <HxButton type="submit" Color="ThemeColor.Primary">
-        @if (Id is null)
-        {
-            <span>Create</span>
-        }
-        else
-        {
-            <span>Update</span>
-        }
-        </HxButton>
-</EditForm>
+            <EditForm Model="CurrentJob" OnSubmit="HandleSubmit" FormName="JobForm" class="col-6">
+                <HxInputText @bind-Value="CurrentJob.Reference"
+                    Label="Reference"/>
+                <HxInputText @bind-Value="CurrentJob.Address"
+                    Label="Address"/>
+                <HxInputText @bind-Value="CurrentJob.Description"
+                    Label="Description"/>
+                @*Compromise for broken HxSelect (value is set to index rather than given value)*@
+                <div class="form-group position-relative">
+                    <label class="form-label" for="customer">Customer</label>
+                    <InputSelect @bind-Value="CurrentJob.CustomerId" class="form-select">
+                        @if (Customers is not null)
+                        {
+                            foreach (var customer in Customers)
+                            {
+                                <option value="@customer.Id">@customer.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+                <HxButton type="submit" Color="ThemeColor.Primary">
+                    @if (Id is null)
+                    {
+                        <span>Create</span>
+                    }
+                    else
+                    {
+                        <span>Update</span>
+                    }
+                </HxButton>
+            </EditForm>
         </div>
     </div>
 
@@ -143,7 +143,7 @@ else {
         CurrentJob.CreatedBy = CurrentUser?.NormalizedEmail;
         CurrentJob.UpdatedBy = CurrentUser?.NormalizedEmail;
 
-        Job? newJob = new();
+        Job? newJob;
 
         // Whether to create a job or update an existing one
         if (Id is null)

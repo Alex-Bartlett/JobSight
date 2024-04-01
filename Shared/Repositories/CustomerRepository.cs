@@ -16,9 +16,13 @@ namespace Shared.Repositories
             _context = context;
         }
 
-        public Task<Customer?> AddAsync(Customer customer)
+        public async Task<Customer?> AddAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+            // Get the new customer
+            await _context.Entry(customer).ReloadAsync();
+            return customer;
         }
 
         public Task DeleteAsync(int id)
@@ -28,17 +32,36 @@ namespace Shared.Repositories
 
         public async Task<IEnumerable<Customer>> GetAllAsync(int companyId)
         {
-            return await _context.Customers.Where(c => c.CompanyId == companyId).ToListAsync();
+            return await _context.Customers
+                .Where(c => c.CompanyId == companyId)
+                .ToListAsync();
         }
 
-        public Task<Customer?> GetByIdAsync(int id)
+        public async Task<Customer?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Customers
+                .Where(c => c.Id == id)
+                .SingleOrDefaultAsync();
         }
 
-        public Task<Customer?> UpdateAsync(Customer customer)
+        public async Task<Customer?> UpdateAsync(Customer updatedCustomer)
         {
-            throw new NotImplementedException();
+            var customer = await _context.Customers.FindAsync(updatedCustomer.Id);
+
+            if (customer is null)
+            {
+                return null;
+            }
+
+            customer.Name = updatedCustomer.Name;
+            customer.Address = updatedCustomer.Address;
+            customer.Postcode = updatedCustomer.Postcode;
+            customer.UpdatedBy = updatedCustomer.UpdatedBy;
+            customer.UpdatedOn = updatedCustomer.UpdatedOn;
+            // I can't see us ever wanting to change the company of a customer. But if we do, we'll need to add that here.
+
+            await _context.SaveChangesAsync();
+            return customer;
         }
     }
 }

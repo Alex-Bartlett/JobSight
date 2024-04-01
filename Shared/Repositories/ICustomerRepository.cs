@@ -10,7 +10,7 @@ namespace Shared.Repositories
         Task<Customer?> GetByIdAsync(int id);
         Task<IEnumerable<Customer>> GetAllAsync(int companyId);
         Task<Customer?> AddAsync(Customer customer);
-        Task<Customer?> UpdateAsync(Customer customer);
+        Task<Customer?> UpdateAsync(Customer updatedCustomer);
         Task DeleteAsync(int id);
     }
 }
