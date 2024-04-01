@@ -38,6 +38,7 @@ namespace Shared.Repositories
         {
             return await _context.JobTasks
                 .Where(task => task.Id == id)
+                .Include(task => task.Job)
                 .Include(task => task.Images)
                 .Include(task => task.User)
                 .SingleOrDefaultAsync();

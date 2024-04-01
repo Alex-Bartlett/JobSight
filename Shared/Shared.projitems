@@ -13,7 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)models\AuditableEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)models\CompanySpecificEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DTOs\JobDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)repositories\ITaskRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\IUserCompanyRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)repositories\TaskRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\UserCompanyRepository.cs" />
     <Compile Include="..\Shared\Models\UserCompany.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\CompanyRepository.cs" />

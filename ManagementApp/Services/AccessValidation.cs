@@ -27,6 +27,23 @@ namespace ManagementApp.Services
         }
 
         /// <summary>
+        /// Checks if the user's current company matches the companyId. If not, throws an exception.
+        /// </summary>
+        /// <param name="companyId">The company id to check against</param>
+        /// <param name="currentUser">The current user</param>
+        /// <param name="logger">The service's logger</param>
+        /// <exception cref="UnauthorizedAccessException">Thrown if the user is not allowed to access the job resource.</exception>
+        public static void CheckForAuthorizationViolations(int companyId, User currentUser, ILogger logger)
+        {
+            // Company specific checks
+            if (currentUser.CurrentCompanyId != companyId)
+            {
+                logger.LogWarning("User attempted to access an unauthorized resource.", [currentUser]);
+                throw new UnauthorizedAccessException("User is not authorized to access this resource.");
+            }
+        }
+
+        /// <summary>
         /// Validates the entity and checks if the user is authorized to access/modify it. CompanySpecificEntity entities are checked for authorization.
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -1,0 +1,14 @@
+﻿@inject IUserService _userService;
+@inject ITaskService _taskService;
+
+<h3>TaskList</h3>
+
+@code {
+    [Parameter]
+    public int? JobId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        
+    }
+}
