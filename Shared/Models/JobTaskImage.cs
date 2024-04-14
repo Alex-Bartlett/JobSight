@@ -6,6 +6,7 @@ namespace Shared.Models
     {
         public int Id { get; set; }
         [Required]
+        public string? ImageName { get; set; }
         public string? ImageUrl { get; set; }
         public string? Caption { get; set; }
         [Required]
