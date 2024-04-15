@@ -47,11 +47,13 @@ builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCompanyRepository, UserCompanyRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 // Register services
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 builder.Services.AddHxServices();
 

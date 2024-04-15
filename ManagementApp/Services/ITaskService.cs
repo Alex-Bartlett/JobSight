@@ -11,7 +11,7 @@ namespace ManagementApp.Services
         /// <returns></returns>
         Task<IEnumerable<JobTask>> GetAllAsync(int jobId);
         Task<JobTask?> GetByIdAsync(int id, User user);
-        Task<JobTask?> AddAsync(JobTask task);
+        Task<JobTask?> CreateAsync(JobTask task);
         Task<JobTask?> UpdateAsync(JobTask task);
         Task DeleteAsync(int id);
     }

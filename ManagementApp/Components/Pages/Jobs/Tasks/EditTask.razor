@@ -1,0 +1,180 @@
+﻿@page "/test";
+@page "/job/{JobId:int}/tasks/edit";
+@page "/job/{JobId:int}/tasks/edit/{TaskId:int}";
+@inject NavigationManager navigationManager;
+@inject ITaskService taskService;
+@inject IUserService userService;
+@inject ILogger<EditTask> logger;
+
+    @*This page needs to be @rendermode InteractiveServer. Look into the consequences of setting this (double rendering was an issue, also expecting EF issues)*@
+
+<FormErrorBanner @ref="formErrorBanner" OnNotificationSent="@RefreshComponents"></FormErrorBanner>
+
+@if (TaskId is null)
+{
+    <h3>Create task</h3>
+}
+else
+{
+    <h3>Editing task</h3>
+}
+
+@if (CurrentUser is null)
+{
+    <p>Please sign in.</p>
+}
+else if (Unauthorized)
+{
+    <p>You are not authorized to access this resource.</p>
+}
+else if (!DontShowForm)
+{
+    <EditForm Model="CurrentTask" OnSubmit="HandleSubmit" FormName="TaskForm">
+        <HxInputText @bind-Value="CurrentTask.Description"
+                     Label="Task description" />
+        <HxInputDate @bind-Value="CurrentTask.StartDateTime"
+                     Label="Start date" 
+                     CalendarIcon="BootstrapIcon.Calendar"/>
+        <HxInputDate @bind-Value="CurrentTask.EndDateTime"
+                     Label="End date" />
+        <HxButton type="submit" Color="ThemeColor.Primary">
+            @if (TaskId is null)
+            {
+                <span>Create</span>
+            }
+            else
+            {
+                <span>Update</span>
+            }
+        </HxButton>
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int? TaskId { get; set; }
+    [Parameter]
+    public int? JobId { get; set; }
+
+    [SupplyParameterFromForm]
+    public JobTask CurrentTask { get; set; } = new();
+
+    public User? CurrentUser;
+
+    public bool Unauthorized = false;
+
+    // Adding this so the form can be hidden when there's an error. Submitting could cause further errors otherwise.
+    public bool DontShowForm = false;
+
+    public FormErrorBanner formErrorBanner;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (JobId is null)
+        {
+            // Logging is usually handled in the service layer. However, since no services are involved in this check, we need to log here.
+            DontShowForm = true;
+            logger.LogError("JobId is null. Cannot create/edit task for non-existent job.");
+            // Can't use the banner here, as it's not initialized yet. Need to find another way to do this.
+            // await formErrorBanner.ShowError("Job was not found. Cannot create/edit task for non-existent job.");
+            return;
+        }
+
+        await InitializeData();
+
+        if (TaskId is not null && CurrentUser is not null)
+        {
+            // Try to get task with id
+            try
+            {
+                var task = await taskService.GetByIdAsync(TaskId.Value, CurrentUser);
+
+                if (task is not null)
+                {
+                    CurrentTask.Id = task.Id;
+                    CurrentTask.Description ??= task.Description;
+                    CurrentTask.StartDateTime ??= task.StartDateTime;
+                    CurrentTask.EndDateTime ??= task.EndDateTime;
+                    CurrentTask.Images ??= task.Images;
+
+                    // Check jobId matches that of the task
+                    if (task.JobId is not null && task.JobId != JobId)
+                    {
+                        DontShowForm = true;
+                        logger.LogError("Task does not belong to job. Cannot edit task that does not belong to job.");
+
+                        // Again, can't use the banner here, as it's not initialized yet. Need to find another way to do this.
+                        //await formErrorBanner.ShowError("Task does not belong to job. Cannot edit task that does not belong to job.");
+                        return;
+                    }
+                    // If null, set CurrentTask's jobId to that of the url parameter (JobId)
+                    else if (task.JobId is null)
+                    {
+                        CurrentTask.JobId = JobId.Value;
+                    }
+                    // We don't want to overwrite a task's jobId if it's already set, so we don't need to do anything here.
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Unauthorized = true;
+            }
+        }
+    }
+
+    private async Task InitializeData()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        await PopulateCurrentTask();
+    }
+
+    private async Task PopulateCurrentTask()
+    {
+        if (TaskId is not null && CurrentUser is not null)
+        {
+            var task = await taskService.GetByIdAsync(TaskId.Value, CurrentUser);
+            if (task is not null)
+            {
+                CurrentTask.Id = task.Id;
+                CurrentTask.Description ??= task.Description;
+                CurrentTask.StartDateTime ??= task.StartDateTime;
+                CurrentTask.EndDateTime ??= task.EndDateTime;
+                CurrentTask.Images ??= task.Images;
+            }
+        }
+    }
+
+    public async Task HandleSubmit()
+    {
+        // Add auditing (see JobSightDbContext). Null coalescing is handled there, so it's safe to set null values here.
+        CurrentTask.CreatedBy = CurrentUser?.NormalizedEmail;
+        CurrentTask.UpdatedBy = CurrentUser?.NormalizedEmail;
+
+        JobTask? newTask;
+        if (TaskId is null)
+        {
+            newTask = await taskService.CreateAsync(CurrentTask);
+        }
+        else
+        {
+            newTask = await taskService.UpdateAsync(CurrentTask);
+        }
+
+        if (newTask is not null)
+        {
+            navigationManager.NavigateTo($"/job/{JobId}/tasks/{newTask.Id}");
+        }
+        else
+        {
+            await formErrorBanner.ShowError("Error creating/updating task.");
+        }
+    }
+
+
+    void RefreshComponents()
+    {
+        // I have no idea why this is necessary for the notification to update, but apparently it is.
+        StateHasChanged();
+    }
+}

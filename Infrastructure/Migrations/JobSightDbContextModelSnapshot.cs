@@ -168,7 +168,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountTiers");
+                    b.ToTable("AccountTiers", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.Company", b =>
@@ -198,7 +198,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AccountTierId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.Customer", b =>
@@ -241,7 +241,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.Job", b =>
@@ -291,7 +291,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.JobNote", b =>
@@ -318,7 +318,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("JobNotes");
+                    b.ToTable("JobNotes", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.JobTask", b =>
@@ -364,7 +364,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("JobTasks");
+                    b.ToTable("JobTasks", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.JobTaskImage", b =>
@@ -392,7 +392,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("JobTaskId");
 
-                    b.ToTable("JobTaskImages");
+                    b.ToTable("JobTaskImages", (string)null);
                 });
 
             modelBuilder.Entity("Shared.Models.User", b =>
@@ -485,7 +485,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCompanies");
+                    b.ToTable("UserCompanies", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

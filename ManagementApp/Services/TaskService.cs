@@ -18,9 +18,22 @@ namespace ManagementApp.Services
             _jobService = jobService;
         }
 
-        public Task<JobTask> AddAsync(JobTask task)
+        public async Task<JobTask?> CreateAsync(JobTask task)
         {
-            throw new NotImplementedException();
+            if (!await IsValid(task))
+            {
+                _logger.LogError("Task is not valid.", [task]);
+                return null;
+            }
+
+            var newTask = await _taskRepository.AddAsync(task);
+
+            if (newTask is null)
+            {
+                _logger.LogError("Task could not be created.", [task]);
+            }
+
+            return newTask;
         }
 
         public Task DeleteAsync(int id)
@@ -55,9 +68,28 @@ namespace ManagementApp.Services
             return task;
         }
 
-        public Task<JobTask> UpdateAsync(JobTask task)
+        public async Task<JobTask?> UpdateAsync(JobTask task)
         {
-            throw new NotImplementedException();
+            if (!await IsValid(task))
+            {
+                _logger.LogError("Task is not valid.", [task]);
+                return null;
+            }
+
+            var updatedTask = await _taskRepository.UpdateAsync(task);
+
+            if (updatedTask is null)
+            {
+                _logger.LogError("Task could not be updated", [task]);
+            }
+
+            return updatedTask;
+        }
+
+        private async Task<bool> IsValid(JobTask task)
+        {
+            var user = await _userService.GetCurrentUserAsync();
+            return AccessValidation.IsValid(task, user, _logger);
         }
     }
 }
