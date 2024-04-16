@@ -1,55 +1,59 @@
-﻿@page "/test";
-@page "/job/{JobId:int}/tasks/edit";
+﻿@page "/job/{JobId:int}/tasks/edit";
 @page "/job/{JobId:int}/tasks/edit/{TaskId:int}";
 @inject NavigationManager navigationManager;
 @inject ITaskService taskService;
 @inject IUserService userService;
 @inject ILogger<EditTask> logger;
-
-    @*This page needs to be @rendermode InteractiveServer. Look into the consequences of setting this (double rendering was an issue, also expecting EF issues)*@
+@rendermode @(new InteractiveServerRenderMode(false))
 
 <FormErrorBanner @ref="formErrorBanner" OnNotificationSent="@RefreshComponents"></FormErrorBanner>
 
-@if (TaskId is null)
+@if (PageIsLoading)
 {
-    <h3>Create task</h3>
+    <p>Loading...</p>
 }
 else
 {
-    <h3>Editing task</h3>
-}
+    @if (TaskId is null)
+    {
+        <h3>Create task</h3>
+    }
+    else
+    {
+        <h3>Editing task</h3>
+    }
 
-@if (CurrentUser is null)
-{
-    <p>Please sign in.</p>
+    @if (CurrentUser is null)
+    {
+        <p>Please sign in.</p>
+    }
+    else if (Unauthorized)
+    {
+        <p>You are not authorized to access this resource.</p>
+    }
+    else if (!DontShowForm)
+    {
+        <EditForm Model="CurrentTask" OnSubmit="HandleSubmit" FormName="TaskForm">
+            <HxInputText @bind-Value="CurrentTask.Description"
+                         Label="Task description" />
+            <HxInputDate @bind-Value="CurrentTask.StartDateTime"
+                         Label="Start date" 
+                         CalendarIcon="BootstrapIcon.Calendar"/>
+            <HxInputDate @bind-Value="CurrentTask.EndDateTime"
+                         Label="End date" />
+            <HxButton type="submit" Color="ThemeColor.Primary">
+                @if (TaskId is null)
+                {
+                    <span>Create</span>
+                }
+                else
+                {
+                    <span>Update</span>
+                }
+            </HxButton>
+        </EditForm>
+    }
 }
-else if (Unauthorized)
-{
-    <p>You are not authorized to access this resource.</p>
-}
-else if (!DontShowForm)
-{
-    <EditForm Model="CurrentTask" OnSubmit="HandleSubmit" FormName="TaskForm">
-        <HxInputText @bind-Value="CurrentTask.Description"
-                     Label="Task description" />
-        <HxInputDate @bind-Value="CurrentTask.StartDateTime"
-                     Label="Start date" 
-                     CalendarIcon="BootstrapIcon.Calendar"/>
-        <HxInputDate @bind-Value="CurrentTask.EndDateTime"
-                     Label="End date" />
-        <HxButton type="submit" Color="ThemeColor.Primary">
-            @if (TaskId is null)
-            {
-                <span>Create</span>
-            }
-            else
-            {
-                <span>Update</span>
-            }
-        </HxButton>
-    </EditForm>
-}
-
 
 @code {
     [Parameter]
@@ -57,10 +61,15 @@ else if (!DontShowForm)
     [Parameter]
     public int? JobId { get; set; }
 
+    [Parameter]
+    public EventCallback OnTaskCreated { get; set; }
+
     [SupplyParameterFromForm]
     public JobTask CurrentTask { get; set; } = new();
 
     public User? CurrentUser;
+
+    public bool PageIsLoading = true;
 
     public bool Unauthorized = false;
 
@@ -70,6 +79,18 @@ else if (!DontShowForm)
     public FormErrorBanner formErrorBanner;
 
     protected override async Task OnParametersSetAsync()
+    {
+        await InitializeData();
+        PageIsLoading = false;
+    }
+
+    private async Task InitializeData()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        await PopulateCurrentTask();
+    }
+
+    private async Task PopulateCurrentTask()
     {
         if (JobId is null)
         {
@@ -81,24 +102,13 @@ else if (!DontShowForm)
             return;
         }
 
-        await InitializeData();
-
-        if (TaskId is not null && CurrentUser is not null)
+        try
         {
-            // Try to get task with id
-            try
+            if (TaskId is not null && CurrentUser is not null)
             {
                 var task = await taskService.GetByIdAsync(TaskId.Value, CurrentUser);
-
                 if (task is not null)
                 {
-                    CurrentTask.Id = task.Id;
-                    CurrentTask.Description ??= task.Description;
-                    CurrentTask.StartDateTime ??= task.StartDateTime;
-                    CurrentTask.EndDateTime ??= task.EndDateTime;
-                    CurrentTask.Images ??= task.Images;
-
-                    // Check jobId matches that of the task
                     if (task.JobId is not null && task.JobId != JobId)
                     {
                         DontShowForm = true;
@@ -108,40 +118,30 @@ else if (!DontShowForm)
                         //await formErrorBanner.ShowError("Task does not belong to job. Cannot edit task that does not belong to job.");
                         return;
                     }
+
+                    CurrentTask.Id = task.Id;
+                    CurrentTask.Description ??= task.Description;
+                    CurrentTask.StartDateTime ??= task.StartDateTime;
+                    CurrentTask.EndDateTime ??= task.EndDateTime;
+                    CurrentTask.Images ??= task.Images;
+                    CurrentTask.UserId = task.UserId;
                     // If null, set CurrentTask's jobId to that of the url parameter (JobId)
-                    else if (task.JobId is null)
+                    if (task.JobId is null)
                     {
                         CurrentTask.JobId = JobId.Value;
                     }
-                    // We don't want to overwrite a task's jobId if it's already set, so we don't need to do anything here.
                 }
             }
-            catch (UnauthorizedAccessException)
+            else
             {
-                Unauthorized = true;
+                CurrentTask.JobId = JobId.Value;
+                // The form won't be shown if the user is null, null coalescing is used just to suppress the warning (a check isn't necessary).
+                CurrentTask.UserId = CurrentUser?.Id;
             }
         }
-    }
-
-    private async Task InitializeData()
-    {
-        CurrentUser = await userService.GetCurrentUserAsync();
-        await PopulateCurrentTask();
-    }
-
-    private async Task PopulateCurrentTask()
-    {
-        if (TaskId is not null && CurrentUser is not null)
+        catch (UnauthorizedAccessException)
         {
-            var task = await taskService.GetByIdAsync(TaskId.Value, CurrentUser);
-            if (task is not null)
-            {
-                CurrentTask.Id = task.Id;
-                CurrentTask.Description ??= task.Description;
-                CurrentTask.StartDateTime ??= task.StartDateTime;
-                CurrentTask.EndDateTime ??= task.EndDateTime;
-                CurrentTask.Images ??= task.Images;
-            }
+            Unauthorized = true;
         }
     }
 
@@ -150,6 +150,16 @@ else if (!DontShowForm)
         // Add auditing (see JobSightDbContext). Null coalescing is handled there, so it's safe to set null values here.
         CurrentTask.CreatedBy = CurrentUser?.NormalizedEmail;
         CurrentTask.UpdatedBy = CurrentUser?.NormalizedEmail;
+
+        // HxInputDate does not supply dates in UTC, so this needs to be done manually.
+        if (CurrentTask.StartDateTime is not null)
+        {
+            CurrentTask.StartDateTime = DateTime.SpecifyKind(CurrentTask.StartDateTime.Value, DateTimeKind.Utc);
+        }
+        if (CurrentTask.EndDateTime is not null)
+        {
+            CurrentTask.EndDateTime = DateTime.SpecifyKind(CurrentTask.EndDateTime.Value, DateTimeKind.Utc);
+        }
 
         JobTask? newTask;
         if (TaskId is null)
@@ -163,7 +173,8 @@ else if (!DontShowForm)
 
         if (newTask is not null)
         {
-            navigationManager.NavigateTo($"/job/{JobId}/tasks/{newTask.Id}");
+            navigationManager.NavigateTo($"/job/{JobId}");
+            await OnTaskCreated.InvokeAsync();
         }
         else
         {

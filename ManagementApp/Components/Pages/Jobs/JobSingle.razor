@@ -1,30 +1,46 @@
 ﻿@page "/job/{id:int}"
 @inject IJobService jobService
+@inject ITaskService taskService
 @inject IUserService userService
 @inject NavigationManager navigationManager
+@rendermode @(new InteractiveServerRenderMode(false))
 
-@if (Job is null)
+@if (PageIsLoading)
 {
-    <h3>Job not found</h3>
-    @if (CurrentUser?.CurrentCompany is not null)
-    {
-        <p>A job for @CurrentUser.CurrentCompany.Name could not be found at this address.</p>
-    }
-    else
-    {
-        <!--The user shouldn't be able to access this page if they're not signed in anyway. This is an error if this user sees this. -->
-        <p>Please sign in</p>
-    }
+    <p>Loading... </p>
 }
 else
 {
-    <h3>Job</h3>
-    <h4><span><b>Reference: </b></span>@Job.Reference</h4>
-    <p><span><b>Description: </b></span>@Job.Description</p>
-    <p><span><b>Address: </b></span>@Job.Address</p>
-    <p><span><b>Customer: </b></span>@Job.Customer!.Name</p>
+    @if (Job is null)
+    {
+        <h3>Job not found</h3>
+        @if (CurrentUser?.CurrentCompany is not null)
+        {
+            <p>A job for @CurrentUser.CurrentCompany.Name could not be found at this address.</p>
+        }
+        else
+        {
+            <!--The user shouldn't be able to access this page if they're not signed in anyway. This is an error if this user sees this. -->
+            <p>Please sign in</p>
+        }
+    }
+    else
+    {
+        <h3>Job</h3>
+        <h4><span><b>Reference: </b></span>@Job.Reference</h4>
+        <p><span><b>Description: </b></span>@Job.Description</p>
+        <p><span><b>Address: </b></span>@Job.Address</p>
+        <p><span><b>Customer: </b></span>@Job.Customer!.Name</p>
 
+        <HxButton @onclick="ShowAddTask" Color="ThemeColor.Primary">Add Task</HxButton>
 
+        @if (AddTaskVisible)
+        {
+            <EditTask JobId="@Job.Id" OnTaskCreated="TaskCreated"/>
+        }
+
+        <TaskTimeline JobTasks="Tasks"/>
+    }
 }
 
 @code {
@@ -32,7 +48,12 @@ else
     public int? Id { get; set; } = null;
 
     public Job? Job;
+    public IEnumerable<JobTask> Tasks = [];
     public User? CurrentUser;
+
+    public bool PageIsLoading = true;
+
+    public bool AddTaskVisible = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -43,11 +64,34 @@ else
             try
             {
                 Job = await jobService.GetByIdAsync(Id.Value, CurrentUser);
+                await LoadTasks();
             }
             catch (UnauthorizedAccessException)
             {
                 Job = null;
             }
         }
+
+        PageIsLoading = false;
+    }
+
+    private async Task LoadTasks()
+    {
+        if (Job is not null)
+        {
+            Tasks = await taskService.GetAllAsync(Job.Id);
+        }
+    }
+
+    public void ShowAddTask()
+    {
+        AddTaskVisible = true;
+
+    }
+
+    public async Task TaskCreated()
+    {
+        AddTaskVisible = false;
+        await LoadTasks();
     }
 }
