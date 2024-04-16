@@ -10,4 +10,13 @@
 @code {
     [Parameter]
     public IEnumerable<JobTask> JobTasks { get; set; } = [];
+
+    protected override void OnParametersSet()
+    {
+        // Order tasks by start date, just in case this isn't done in query
+        if (JobTasks.Any())
+        {
+            JobTasks = JobTasks.OrderByDescending(t => t.StartDateTime);
+        }
+    }
 }
