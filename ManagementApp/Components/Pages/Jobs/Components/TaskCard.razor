@@ -1,5 +1,6 @@
 ﻿@inject IUserService userService;
 @inject ITaskService taskService;
+@inject Supabase.Client supabase;
 
 @if (Task is not null && !deleted)
 {
@@ -25,15 +26,37 @@
         <div class="">
             <h5 class="mt-3">@Task.Description</h5>
         </div>
+
+        @if (BucketContents.Count > 0)
+        {
+            <h3>Bucket contents</h3>
+            <ul>
+                @foreach (var name in BucketContents)
+                {
+                    <li>@name</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <HxButton @onclick="LoadBucketContents" Color="ThemeColor.Primary">Load bucket contents</HxButton>
+        }
+
         <HxButton @onclick="DeleteClicked" Color="ThemeColor.Danger">Delete</HxButton>
     </div>
+
+
 }
 @code {
     [Parameter]
     public JobTask? Task { get; set; }
     [Parameter]
     public EventCallback<int> TaskDeleted { get; set; }
+
     private bool deleted = false;
+
+
+    public List<string> BucketContents = [];
 
     public async Task DeleteClicked()
     {
@@ -46,5 +69,22 @@
             Task = null;
             deleted = true;
         }
+    }
+
+    private async Task<List<string>> GetBucketContents()
+    {
+        var supabaseStorage = supabase.Storage;
+
+        var res = await supabaseStorage.From("task-images").List();
+        List<string> names = [];
+        if (res is not null) {
+            res.ForEach(i => names.Add(i.Name ?? "Name not found"));
+        }
+        return names;
+    }
+
+    public async Task LoadBucketContents()
+    {
+        BucketContents = await GetBucketContents();
     }
 }
