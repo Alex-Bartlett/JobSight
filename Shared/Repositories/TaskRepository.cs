@@ -20,9 +20,12 @@ namespace Shared.Repositories
             return task;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+			// A more efficient way to delete entities https://khalidabuhakmeh.com/more-efficient-deletes-with-entity-framework-core#entity-framework-core-7-updates
+			await _context.JobTasks
+                .Where(t => t.Id == id)
+                .ExecuteDeleteAsync();
         }
 
         public async Task<IEnumerable<JobTask>> GetAllAsync(int jobId)

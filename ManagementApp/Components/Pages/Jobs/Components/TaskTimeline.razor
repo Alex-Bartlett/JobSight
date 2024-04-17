@@ -3,13 +3,15 @@
 <div>
 @foreach (JobTask task in JobTasks)
 {
-    <TaskCard Task="@task" />
+    <TaskCard Task="@task" TaskDeleted="TaskDeleted"/>
 }
 </div>
 
 @code {
     [Parameter]
     public IEnumerable<JobTask> JobTasks { get; set; } = [];
+    [Parameter]
+    public EventCallback<IEnumerable<JobTask>> OnTimelineUpdate { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -18,5 +20,17 @@
         {
             JobTasks = JobTasks.OrderByDescending(t => t.StartDateTime);
         }
+    }
+
+    public async Task TaskDeleted(int id)
+    {
+        // Remove the task from the list
+        var task = JobTasks.FirstOrDefault(t => t.Id == id);
+        if (task is not null)
+        {
+            JobTasks = JobTasks.Where(t => t.Id != id);
+        }
+
+        await OnTimelineUpdate.InvokeAsync(JobTasks);
     }
 }

@@ -39,7 +39,7 @@ else
             <EditTask JobId="@Job.Id" OnTaskCreated="TaskCreated"/>
         }
 
-        <TaskTimeline JobTasks="Tasks"/>
+        <TaskTimeline JobTasks="Tasks" OnTimelineUpdate="ReloadTimeline"/>
     }
 }
 
@@ -93,5 +93,10 @@ else
     {
         AddTaskVisible = false;
         await LoadTasks();
+    }
+
+    public void ReloadTimeline(IEnumerable<JobTask> tasks)
+    {
+        Tasks = tasks;
     }
 }

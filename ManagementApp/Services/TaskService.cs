@@ -36,9 +36,19 @@ namespace ManagementApp.Services
             return newTask;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, User user)
         {
-            throw new NotImplementedException();
+            // Get the task first to perform authorisation checks. Costly, but necessary.
+            var entityToDelete = await GetByIdAsync(id, user);
+            if (entityToDelete is null)
+            {
+                _logger.LogWarning("Failed to delete task.");
+                return;
+            }
+
+            // Though entityToDelete.Id not strictly the same id as the one passed in,
+            // I'd rather delete the entity that was authorised than one that wasn't.
+            await _taskRepository.DeleteAsync(entityToDelete.Id);
         }
 
         public Task<IEnumerable<JobTask>> GetAllAsync(int jobId)

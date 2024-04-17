@@ -13,6 +13,6 @@ namespace ManagementApp.Services
         Task<JobTask?> GetByIdAsync(int id, User user);
         Task<JobTask?> CreateAsync(JobTask task);
         Task<JobTask?> UpdateAsync(JobTask task);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int id, User user);
     }
 }
