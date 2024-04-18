@@ -5,6 +5,9 @@
 <p class="text-danger">@ErrorMessage</p>
 
 @code {
+    [Parameter]
+    public int? JobTaskId { get; set; }
+
     private long _maxFileSize = 0;
     public long MaxFileSize 
     { 
@@ -25,12 +28,23 @@
 
     public async Task LoadFile(InputFileChangeEventArgs e)
     {
+        if (JobTaskId is null)
+        {
+            return;
+        }
+
+        JobTaskImage jobTaskImage = new()
+        {
+            JobTaskId = JobTaskId.Value,
+            Caption = "none"
+        };
+        
         try
         {
             using (var memoryStream = new MemoryStream())
             {
                 await e.File.OpenReadStream(MaxFileSize).CopyToAsync(memoryStream);
-                await taskImageService.AddImage(2, memoryStream);
+                await taskImageService.AddImage(jobTaskImage, 2, memoryStream);
             }
         }
         catch (IOException)

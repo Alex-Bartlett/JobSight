@@ -27,10 +27,12 @@ namespace Shared.Repositories
         /// Adds a new task image and uploads the image file to the storage service.
         /// </summary>
         /// <param name="taskImage">The task image object to add</param>
-        /// <param name="imageFile">The relevant image file in bytes to add</param>
+        /// <param name="imgStream">The file stream for the incoming image</param>
         /// <param name="companyId">The company ID for the task, used to locate the relevant bucket</param>
+        /// <param name="expirationInMinutes">Minutes until the generated url expires</param>
+
         /// <returns>The new task image object</returns>
-        Task<JobTaskImage?> AddAsync(JobTaskImage taskImage, MemoryStream imgStream, int companyId);
+        Task<JobTaskImage?> AddAsync(JobTaskImage taskImage, MemoryStream imgStream, int companyId, int expirationInMinutes);
 
         /// <summary>
         /// Deletes a task image from the database and the storage service.

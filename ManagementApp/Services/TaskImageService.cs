@@ -6,16 +6,20 @@ namespace ManagementApp.Services
     public class TaskImageService : ITaskImageService
     {
         private readonly ITaskImageRepository _taskImageRepository;
+        private readonly IConfiguration _configuration;
 
-        public TaskImageService(ITaskImageRepository taskImageRepository)
+        public TaskImageService(ITaskImageRepository taskImageRepository, IConfiguration configuration)
         {
             _taskImageRepository = taskImageRepository;
+            _configuration = configuration;
+
         }
 
-        public async Task<JobTaskImage?> AddImage(int companyId, MemoryStream imgStream)
+        public async Task<JobTaskImage?> AddImage(JobTaskImage jobTaskImage, int companyId, MemoryStream imgStream)
         {
-            await _taskImageRepository.AddAsync(new JobTaskImage(), imgStream, companyId);
-            return null;
+            var expirationTime = _configuration.GetValue<int>("ImageUploadConfig:UrlExpirationInMinutes");
+            var result = await _taskImageRepository.AddAsync(jobTaskImage, imgStream, companyId, expirationTime);
+            return result;
         }
     }
 }

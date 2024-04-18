@@ -14,10 +14,21 @@ namespace Shared.Repositories
             _supabaseConnector = supabaseConnector;
         }
 
-        public async Task<JobTaskImage?> AddAsync(JobTaskImage taskImage, MemoryStream imgStream, int companyId)
+        public async Task<JobTaskImage?> AddAsync(JobTaskImage taskImage, MemoryStream imgStream, int companyId, int expirationInMinutes)
         {
-            await _supabaseConnector.AddImage(companyId, imgStream);
-            return null;
+            DateTime expirationTime = DateTime.UtcNow.AddMinutes(expirationInMinutes);
+            var imageName = await _supabaseConnector.AddImage(companyId, imgStream);
+            var imageUrl = await _supabaseConnector.CreateSignedUrl(companyId, imageName, expirationInMinutes);
+
+            taskImage.ImageName = imageName;
+            taskImage.ImageUrl = imageUrl;
+            taskImage.UrlExpiry = expirationTime;
+
+            _context.JobTaskImages.Add(taskImage);
+            await _context.SaveChangesAsync();
+            await _context.Entry(taskImage).ReloadAsync();
+
+            return taskImage;
         }
 
         public Task DeleteAsync(int taskImageId, int companyId)

@@ -1,4 +1,6 @@
-﻿using SixLabors.ImageSharp;
+﻿using Microsoft.Extensions.Logging;
+using Shared.Models;
+using SixLabors.ImageSharp;
 using Supabase;
 using Supabase.Storage.Exceptions;
 using System;
@@ -12,10 +14,13 @@ namespace Infrastructure
     public class ImageBucketConnector
     {
         private readonly Client _supabaseClient;
+        private readonly ILogger _logger;
+        private readonly string _bucket = "task-images";
 
-        public ImageBucketConnector(Client supabaseClient)
+        public ImageBucketConnector(Client supabaseClient, ILogger<ImageBucketConnector> logger)
         {
             _supabaseClient = supabaseClient;
+            _logger = logger;
         }
 
         /// <summary>
@@ -23,12 +28,13 @@ namespace Infrastructure
         /// </summary>
         /// <param name="companyId">Id of company to store image under</param>
         /// <param name="imgStream">The incoming file stream</param>
-        /// <returns>The new file path</returns>
+        /// <param name="expirationInMinutes">Minutes until the generated url expires</param>
+        /// <returns>A new job task image with ImageUrl and UrlExpiry populated</returns>
         /// <exception cref="ArgumentException">Thrown when the uploaded file isn't a supported image type.</exception>
         /// <exception cref="Exception">Thrown when an error occured uploading the image to Supabase</exception>
         public async Task<string> AddImage(int companyId, MemoryStream imgStream)
         {
-            string path = $"task-images/{companyId}"; // This may change in the future
+            string path = $"{_bucket}/{companyId}"; // This may change in the future
             string fileName = Guid.NewGuid().ToString();
             fileName += ".jpeg"; // This may also change in the future
 
@@ -48,15 +54,40 @@ namespace Infrastructure
                 var response = await _supabaseClient.Storage
                     .From(path)
                     .Upload(imageFile, fileName);
-                return response;
+                return fileName;
             }
             catch (SupabaseStorageException e)
             {
+                _logger.LogError("Failed to upload image to bucket.");
                 throw new Exception($"Failed to upload image: {e.Message}");
             }
         }
 
-        private async Task ConvertToJpeg(MemoryStream imgStream) 
+        /// <summary>
+        /// Creates a signed url for a file that expires after a set amount of time.
+        /// </summary>
+        /// <param name="companyId">The id of the company, used to locate the relevant folder in the bucket</param>
+        /// <param name="fileName">The name of the file, including the extension</param>
+        /// <param name="expirationInMinutes">The time until the link expires</param>
+        /// <returns>A signed url for the file, with the given expiry</returns>
+        public async Task<string> CreateSignedUrl(int companyId, string fileName, int expirationInMinutes) 
+        {
+            string path = $"{companyId}/{fileName}";
+            int expirationInSeconds = expirationInMinutes * 60;
+            try
+            {
+                var url = await _supabaseClient.Storage
+                    .From(_bucket)
+                    .CreateSignedUrl(path, expirationInSeconds);
+                return url;
+            }
+            catch (Exception) {
+                _logger.LogError("Failed to create signed url for file.");
+                throw;
+            }
+        }
+
+        private static async Task ConvertToJpeg(MemoryStream imgStream) 
         {
             // Reset the stream position to the beginning
             imgStream.Seek(0, SeekOrigin.Begin);

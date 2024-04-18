@@ -8,6 +8,7 @@ namespace Shared.Models
         [Required]
         public string? ImageName { get; set; }
         public string? ImageUrl { get; set; }
+        public DateTime UrlExpiry { get; set; }
         public string? Caption { get; set; }
         [Required]
         public int JobTaskId { get; set; }
