@@ -1,8 +1,17 @@
-﻿<h3>Task Image Upload</h3
+﻿@inject ITaskImageService taskImageService;
+
+<h3>Task Image Upload</h3>
 
 <button>Upload Image</button>
-<InputFile>Upload Image</InputFile>
+<InputFile OnChange="LoadFile">Upload Image</InputFile>
 
 @code {
-
+    public async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            await e.File.OpenReadStream().CopyToAsync(memoryStream);
+            await taskImageService.AddImage(2, memoryStream);
+        }
+    }
 }

@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)repositories\ITaskImageRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\ITaskRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\IUserCompanyRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)repositories\TaskImageRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\TaskRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)repositories\UserCompanyRepository.cs" />
     <Compile Include="..\Shared\Models\UserCompany.cs" />

@@ -45,6 +45,7 @@ var supabaseKey = builder.Configuration["Supabase:Key"] ?? throw new InvalidOper
 var supabaseOptions = new SupabaseOptions { AutoRefreshToken = true };
 
 builder.Services.AddSingleton(provider => new Supabase.Client(supabaseUrl, supabaseKey, supabaseOptions));
+builder.Services.AddSingleton<SupabaseConnector>();
 
 builder.Services.AddLogging();
 
@@ -55,12 +56,14 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCompanyRepository, UserCompanyRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskImageRepository, TaskImageRepository>();
 // Register services
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskImageService, TaskImageService>();
 
 builder.Services.AddHxServices();
 
