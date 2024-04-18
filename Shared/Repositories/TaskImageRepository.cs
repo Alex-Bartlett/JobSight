@@ -6,9 +6,9 @@ namespace Shared.Repositories
     public class TaskImageRepository : ITaskImageRepository
     {
         private readonly JobSightDbContext _context;
-        private readonly SupabaseConnector _supabaseConnector;
+        private readonly ImageBucketConnector _supabaseConnector;
 
-        public TaskImageRepository(JobSightDbContext context, SupabaseConnector supabaseConnector)
+        public TaskImageRepository(JobSightDbContext context, ImageBucketConnector supabaseConnector)
         {
             _context = context;
             _supabaseConnector = supabaseConnector;

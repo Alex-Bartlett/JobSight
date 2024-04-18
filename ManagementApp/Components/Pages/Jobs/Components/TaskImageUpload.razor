@@ -1,17 +1,48 @@
 ﻿@inject ITaskImageService taskImageService;
+@inject IConfiguration configuration;
 
-<h3>Task Image Upload</h3>
-
-<button>Upload Image</button>
-<InputFile OnChange="LoadFile">Upload Image</InputFile>
+<InputFile OnChange="LoadFile" accept="@AllowedExtensions">Upload Image</InputFile>
+<p class="text-danger">@ErrorMessage</p>
 
 @code {
+    private long _maxFileSize = 0;
+    public long MaxFileSize 
+    { 
+        get => _maxFileSize;
+        set => _maxFileSize = value * 1024; // Convert from kb to bytes
+    }
+
+    public string AllowedExtensions { get; set; } = string.Empty;
+
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        MaxFileSize = configuration.GetValue<long>("ImageUploadConfig:MaxSizeInKb");
+        var allowedExtensionsList = configuration.GetSection("ImageUploadConfig:AllowedExtensions").Get<string[]>() ?? [];
+        AllowedExtensions = string.Join(",", allowedExtensionsList);
+    }
+
     public async Task LoadFile(InputFileChangeEventArgs e)
     {
-        using (var memoryStream = new MemoryStream())
+        try
         {
-            await e.File.OpenReadStream().CopyToAsync(memoryStream);
-            await taskImageService.AddImage(2, memoryStream);
+            using (var memoryStream = new MemoryStream())
+            {
+                await e.File.OpenReadStream(MaxFileSize).CopyToAsync(memoryStream);
+                await taskImageService.AddImage(2, memoryStream);
+            }
+        }
+        catch (IOException)
+        {
+            // File size out of bounds (thrown by file stream)
+            ErrorMessage = $"File size is too large. Maximum size: {MaxFileSize/1024}KB";
+
+        }
+        catch (ArgumentException)
+        {
+            // Invalid file type (thrown by image upload service)
+            ErrorMessage = $"Invalid file type. Allowed types: {AllowedExtensions}";
         }
     }
 }

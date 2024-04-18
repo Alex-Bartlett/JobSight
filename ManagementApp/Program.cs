@@ -16,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+//builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -45,7 +47,7 @@ var supabaseKey = builder.Configuration["Supabase:Key"] ?? throw new InvalidOper
 var supabaseOptions = new SupabaseOptions { AutoRefreshToken = true };
 
 builder.Services.AddSingleton(provider => new Supabase.Client(supabaseUrl, supabaseKey, supabaseOptions));
-builder.Services.AddSingleton<SupabaseConnector>();
+builder.Services.AddScoped<ImageBucketConnector>();
 
 builder.Services.AddLogging();
 
