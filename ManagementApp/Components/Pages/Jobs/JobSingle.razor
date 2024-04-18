@@ -95,8 +95,9 @@ else
         await LoadTasks();
     }
 
-    public void ReloadTimeline(IEnumerable<JobTask> tasks)
+    public async Task ReloadTimeline(IEnumerable<JobTask> tasks)
     {
-        Tasks = tasks;
+        await LoadTasks();
+        StateHasChanged();
     }
 }

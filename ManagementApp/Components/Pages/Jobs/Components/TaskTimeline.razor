@@ -1,11 +1,18 @@
 ﻿<h3 class="mt-3">Timeline</h3>
 
-<div>
-@foreach (JobTask task in JobTasks)
+@if (JobTasks.Any())
 {
-    <TaskCard Task="@task" TaskDeleted="TaskDeleted"/>
+    <div>
+    @foreach (JobTask task in JobTasks)
+    {
+        <TaskCard Task="@task" TaskDeleted="TaskDeleted"/>
+    }
+    </div>
 }
-</div>
+else
+{
+    <p class="text-secondary text-center pt-5 fs-4">No tasks yet!</p>
+}
 
 @code {
     [Parameter]
@@ -18,7 +25,7 @@
         // Order tasks by start date, just in case this isn't done in query
         if (JobTasks.Any())
         {
-            JobTasks = JobTasks.OrderByDescending(t => t.StartDateTime);
+            JobTasks = JobTasks.OrderByDescending(t => t.StartDateTime).ThenByDescending(t => t.CreatedOn); // StartDateTime has time 0000, so CreatedOn is used as secondary sort for chronological order
         }
     }
 

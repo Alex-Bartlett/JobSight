@@ -66,8 +66,6 @@
             await taskService.DeleteAsync(Task.Id, user);
             // Now we need to refresh the parent component
             await TaskDeleted.InvokeAsync(Task.Id);
-            Task = null;
-            deleted = true;
         }
     }
 
