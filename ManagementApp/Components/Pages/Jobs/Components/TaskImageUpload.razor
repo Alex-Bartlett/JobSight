@@ -8,6 +8,9 @@
     [Parameter]
     public int? JobTaskId { get; set; }
 
+    [Parameter]
+    public EventCallback<JobTaskImage> OnImageUploaded { get; set; }
+
     private long _maxFileSize = 0;
     public long MaxFileSize 
     { 
@@ -44,7 +47,9 @@
             using (var memoryStream = new MemoryStream())
             {
                 await e.File.OpenReadStream(MaxFileSize).CopyToAsync(memoryStream);
-                await taskImageService.AddImage(jobTaskImage, 2, memoryStream);
+                var res = await taskImageService.AddImage(jobTaskImage, 2, memoryStream);
+                // Invoke the event callback with the new job task image
+                await OnImageUploaded.InvokeAsync(res);
             }
         }
         catch (IOException)
@@ -59,4 +64,6 @@
             ErrorMessage = $"Invalid file type. Allowed types: {AllowedExtensions}";
         }
     }
+
+
 }

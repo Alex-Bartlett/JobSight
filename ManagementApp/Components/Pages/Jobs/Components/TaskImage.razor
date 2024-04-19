@@ -1,0 +1,25 @@
+﻿<h3>TaskImage</h3>
+
+@if (JobTaskImage is null)
+{
+    <TaskImageUpload OnImageUploaded="ImageUploaded"></TaskImageUpload>
+}
+else
+{
+    <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption" class="w-5 h-5"/>
+}
+
+@code {
+    [Parameter]
+    public JobTaskImage? JobTaskImage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    public void ImageUploaded(JobTaskImage image)
+    {
+        JobTaskImage = image;
+    }
+}

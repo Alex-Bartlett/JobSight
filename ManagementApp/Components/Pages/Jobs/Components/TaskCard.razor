@@ -27,21 +27,17 @@
             <h5 class="mt-3">@Task.Description</h5>
         </div>
 
-        @if (BucketContents.Count > 0)
+        @if (Task.Images is not null) 
         {
-            <h3>Bucket contents</h3>
-            <ul>
-                @foreach (var name in BucketContents)
-                {
-                    <li>@name</li>
-                }
-            </ul>
+            @foreach (var jobTaskImage in Task.Images)
+            {
+                <TaskImage JobTaskImage="@jobTaskImage"/>
+            }
         }
-        else
-        {
-            <HxButton @onclick="LoadBucketContents" Color="ThemeColor.Primary">Load bucket contents</HxButton>
-        }
+        @*An unset task image to allow for uploading more images*@
+        <TaskImage/>
 
+        @*NEED TO ADD A TASK IMAGE DELETE METHOD HERE OR SOMEWHERE WITHIN*@
         <HxButton @onclick="DeleteClicked" Color="ThemeColor.Danger">Delete</HxButton>
 
         <TaskImageUpload JobTaskId="@Task.Id"/>
