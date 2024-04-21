@@ -5,6 +5,7 @@ using Supabase;
 using Supabase.Storage.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,38 @@ namespace Infrastructure
             }
             catch (Exception) {
                 _logger.LogError("Failed to create signed url for file.");
+                throw;
+            }
+        }
+
+        public async Task DeleteImage(int companyId, string fileName)
+        {
+            string path = $"{companyId}/{fileName}";
+            try
+            {
+                await _supabaseClient.Storage
+                    .From(_bucket)
+                    .Remove(path);
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Failed to delete image from bucket.", [path]);
+                throw;
+            }
+        }
+
+        public async Task DeleteImages(int companyId, List<string> fileNames)
+        {
+            List<string> paths = fileNames.Select(fileName => $"{companyId}/{fileName}").ToList();
+            try
+            {
+                await _supabaseClient.Storage
+                    .From(_bucket)
+                    .Remove(paths);
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Failed to delete multiple images from bucket.", [paths]);
                 throw;
             }
         }

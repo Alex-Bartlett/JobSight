@@ -14,6 +14,6 @@ namespace Shared.Models
         public virtual Job? Job { get; set; }
         public string? UserId { get; set; }
         public virtual User? User { get; set; }
-        public List<JobTaskImage>? Images { get; set; }
+        public virtual List<JobTaskImage> Images { get; set; } = [];
     }
 }

@@ -27,20 +27,18 @@
             <h5 class="mt-3">@Task.Description</h5>
         </div>
 
-        @if (Task.Images is not null) 
-        {
-            @foreach (var jobTaskImage in Task.Images)
+        <div class="d-flex">
+            @if (Task.Images is not null) 
             {
-                <TaskImage JobTaskImage="@jobTaskImage"/>
+                @foreach (var jobTaskImage in Task.Images)
+                {
+                    <TaskImage JobTaskImage="@jobTaskImage" JobTaskId="Task.Id"/>
+                }
             }
-        }
-        @*An unset task image to allow for uploading more images*@
-        <TaskImage/>
-
-        @*NEED TO ADD A TASK IMAGE DELETE METHOD HERE OR SOMEWHERE WITHIN*@
+            @*An unset task image to allow for uploading more images*@
+            <TaskImage JobTaskId="Task.Id"/>
+        </div>
         <HxButton @onclick="DeleteClicked" Color="ThemeColor.Danger">Delete</HxButton>
-
-        <TaskImageUpload JobTaskId="@Task.Id"/>
     </div>
 
 

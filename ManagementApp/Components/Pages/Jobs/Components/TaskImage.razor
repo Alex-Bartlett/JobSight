@@ -1,22 +1,22 @@
-﻿<h3>TaskImage</h3>
+﻿
+<div class="js-task-image border border-secondary rounded me-2 mb-1">
 
 @if (JobTaskImage is null)
 {
-    <TaskImageUpload OnImageUploaded="ImageUploaded"></TaskImageUpload>
+    <TaskImageUpload JobTaskId="JobTaskId" OnImageUploaded="ImageUploaded"></TaskImageUpload>
 }
 else
 {
-    <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption" class="w-5 h-5"/>
+    <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption"/>
 }
+
+</div>
 
 @code {
     [Parameter]
     public JobTaskImage? JobTaskImage { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        
-    }
+    [Parameter]
+    public int? JobTaskId { get; set; }
 
     public void ImageUploaded(JobTaskImage image)
     {

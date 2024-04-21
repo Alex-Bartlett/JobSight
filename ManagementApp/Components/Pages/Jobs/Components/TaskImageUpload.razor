@@ -1,7 +1,7 @@
 ﻿@inject ITaskImageService taskImageService;
 @inject IConfiguration configuration;
 
-<InputFile OnChange="LoadFile" accept="@AllowedExtensions">Upload Image</InputFile>
+<InputFile OnChange="LoadFile" accept="@AllowedExtensions"/>
 <p class="text-danger">@ErrorMessage</p>
 
 @code {
@@ -47,7 +47,7 @@
             using (var memoryStream = new MemoryStream())
             {
                 await e.File.OpenReadStream(MaxFileSize).CopyToAsync(memoryStream);
-                var res = await taskImageService.AddImage(jobTaskImage, 2, memoryStream);
+                var res = await taskImageService.AddImage(jobTaskImage, memoryStream);
                 // Invoke the event callback with the new job task image
                 await OnImageUploaded.InvokeAsync(res);
             }

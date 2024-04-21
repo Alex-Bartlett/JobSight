@@ -1,0 +1,10 @@
+﻿.js-task-image {
+    width: 10em;
+    height: 10em;
+}
+
+.js-task-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+}

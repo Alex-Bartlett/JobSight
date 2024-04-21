@@ -8,9 +8,11 @@ namespace Shared.Repositories
     public class TaskRepository : ITaskRepository
     {
         private readonly JobSightDbContext _context;
-        public TaskRepository(JobSightDbContext context)
+        private readonly ImageBucketConnector _imageBucketConnector;
+        public TaskRepository(JobSightDbContext context, ImageBucketConnector imageBucketConnector)
         {
             _context = context;
+            _imageBucketConnector = imageBucketConnector;
         }
         public async Task<JobTask?> AddAsync(JobTask task)
         {
@@ -22,10 +24,31 @@ namespace Shared.Repositories
 
         public async Task DeleteAsync(int id)
         {
+            var task = await _context.JobTasks.FindAsync(id);
+
+            if (task is null)
+            {
+                return;
+            }
+
+            // Remove the images from the database (task image rows are deleted by cascade)
+            if (task.Job?.CompanyId is not null && task.Images.Count > 0)
+            {
+                var imageUrls = task.Images
+                    .Where(image => image.ImageName is not null)
+                    .Select(image => image.ImageName)
+                    .ToList();
+                await _imageBucketConnector.DeleteImages(task.Job.CompanyId.Value, imageUrls!); // Nullability checked in above line
+            }
+
+            _context.JobTasks.Remove(task);
+            await _context.SaveChangesAsync();
+
 			// A more efficient way to delete entities https://khalidabuhakmeh.com/more-efficient-deletes-with-entity-framework-core#entity-framework-core-7-updates
-			await _context.JobTasks
+			/*await _context.JobTasks
                 .Where(t => t.Id == id)
-                .ExecuteDeleteAsync();
+                .ExecuteDeleteAsync();*/
+            // Keeping this for future reference, but it's benefits don't exist as object is already loaded for image removal
         }
 
         public async Task<IEnumerable<JobTask>> GetAllAsync(int jobId)
