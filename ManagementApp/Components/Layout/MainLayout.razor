@@ -1,19 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
+    <AuthorizeView>
     <div class="sidebar">
         <NavMenu />
     </div>
 
+    </AuthorizeView>
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <h2 class="title"><a href="/"><span class="text-primary-emphasis">Job</span><span class="text-primary">Sight</span></a></h2>
         </div>
 
         <article class="content px-4">
             @Body
         </article>
     </main>
+
 </div>
 
 <div id="blazor-error-ui">

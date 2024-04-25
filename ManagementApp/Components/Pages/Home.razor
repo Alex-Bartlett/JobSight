@@ -1,7 +1,35 @@
 ﻿@page "/"
+@inject IUserService userService;
+@inject NavigationManager navigationManager;
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (IsLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @if (CurrentUser is not null)
+    {
+        <p>Welcome, @CurrentUser.UserName</p>
+    }
+    else
+    {
+        <p>Sign in!</p>
+    }
+}
 
-Welcome to your new app.
+@code {
+    public User CurrentUser { get; set; }
+    public bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        if (CurrentUser is null) {
+            navigationManager.NavigateTo("/login");
+        }
+        IsLoading = false;
+    }
+}
