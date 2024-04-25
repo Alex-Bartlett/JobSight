@@ -35,10 +35,16 @@
                     <TaskImage JobTaskImage="@jobTaskImage" JobTaskId="Task.Id"/>
                 }
             }
-            @*An unset task image to allow for uploading more images*@
-            <TaskImage JobTaskId="Task.Id"/>
+            @if (HideControls == false)
+            {
+                @*An unset task image to allow for uploading more images*@
+                <TaskImage JobTaskId="Task.Id"/>
+            }
         </div>
-        <HxButton @onclick="DeleteClicked" Color="ThemeColor.Danger">Delete</HxButton>
+        @if (HideControls == false)
+        {
+            <HxButton @onclick="DeleteClicked" Color="ThemeColor.Danger">Delete</HxButton>
+        }
     </div>
 
 
@@ -46,6 +52,8 @@
 @code {
     [Parameter]
     public JobTask? Task { get; set; }
+    [Parameter]
+    public bool HideControls { get; set; } = false;
     [Parameter]
     public EventCallback<int> TaskDeleted { get; set; }
 

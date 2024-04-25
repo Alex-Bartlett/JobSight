@@ -32,20 +32,30 @@ else
         <p><span><b>Address: </b></span>@Job.Address</p>
         <p><span><b>Customer: </b></span>@Job.Customer!.Name</p>
 
-        <HxButton @onclick="ShowAddTask" Color="ThemeColor.Primary">Add Task</HxButton>
-
-        @if (AddTaskVisible)
+        @if (Simplified)
         {
-            <EditTask JobId="@Job.Id" OnTaskCreated="TaskCreated"/>
+            <a class="btn btn-primary w-100" href="@($"/site-new-task/{Job.Id}")"><i class="bi-plus-lg me-1"/>Add a task</a>
+        }
+        else
+        {
+            <HxButton @onclick="ShowAddTask" Color="ThemeColor.Primary">Add Task</HxButton>
+
+            @if (AddTaskVisible)
+            {
+                <EditTask JobId="@Job.Id" OnTaskCreated="TaskCreated"/>
+            }
+
         }
 
-        <TaskTimeline JobTasks="Tasks" OnTimelineUpdate="ReloadTimeline"/>
+        <TaskTimeline JobTasks="Tasks" OnTimelineUpdate="ReloadTimeline" HideControls="Simplified"/> @*Hide controls in simplified mode*@
     }
 }
 
 @code {
     [Parameter]
     public int? Id { get; set; } = null;
+    [Parameter]
+    public bool Simplified { get; set; } = false;
 
     public Job? Job;
     public IEnumerable<JobTask> Tasks = [];

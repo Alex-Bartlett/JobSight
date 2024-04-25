@@ -1,0 +1,56 @@
+﻿@inject IJobService jobService;
+@rendermode InteractiveServer
+
+@if (Jobs.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Reference
+                </th>
+                <th>
+                    Customer
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Job job in Jobs)
+            {
+                <tr @onclick="() => RowClicked(job.Id)">
+                    <td class="text-primary">
+                        @job.Reference
+                    </td>
+                    <td>
+                        @job.Customer.Name
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public User? User { get; set; }
+
+    [Parameter]
+    public EventCallback<Job?> OnJobSelected { get; set; }
+
+    public IEnumerable<Job> Jobs = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Get the jobs for the user
+        if (User is not null && User.CurrentCompanyId is not null)
+        {
+            Jobs = await jobService.GetAllAsync(User.CurrentCompanyId.Value);
+        }
+    }
+
+    public void RowClicked(int id)
+    {
+        Job? job = Jobs.Where(j => j.Id == id).FirstOrDefault();
+        OnJobSelected.InvokeAsync(job);
+    }
+}

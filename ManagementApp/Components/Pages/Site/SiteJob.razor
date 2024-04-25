@@ -1,0 +1,36 @@
+﻿@page "/site-job/{JobId:int}"
+@layout SiteLayout
+@inject IUserService userService;
+@inject NavigationManager navigationManager;
+
+@if (JobId is not null)
+{
+    <div class="bg-white rounded p-2">
+        <JobSingle Id="JobId" Simplified="true"/>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int? JobId { get; set; }
+
+    public User? CurrentUser { get; set; }
+
+    public bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        // Redirect the user to the non-mobile page if they are not a site worker
+        if (CurrentUser is null || CurrentUser.IsSiteWorker == false)
+        {
+            navigationManager.NavigateTo("/");
+        }
+        else if (JobId is null)
+        {
+            navigationManager.NavigateTo("/site");
+        }
+        IsLoading = false;
+    }
+}

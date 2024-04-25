@@ -1,0 +1,41 @@
+﻿@page "/site-new-task/{JobId:int}"
+@layout SiteLayout
+@inject IUserService userService;
+@inject NavigationManager navigationManager;
+@rendermode InteractiveServer
+
+@if (IsLoading == false && CurrentUser is not null && JobId is not null)
+{
+    <EditTask JobId="JobId"/>
+}
+else if (IsLoading == false && JobId is null) 
+{
+    <p>Job ID not provided</p>
+}
+
+@code {
+    [Parameter]
+    public int? JobId { get; set; }
+    public User? CurrentUser { get; set; }
+
+    public bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentUser = await userService.GetCurrentUserAsync();
+        // Redirect the user to the non-mobile page if they are not a site worker
+        if (CurrentUser is null || CurrentUser.IsSiteWorker == false)
+        {
+            navigationManager.NavigateTo("/");
+        }
+        IsLoading = false;
+    }
+
+    public void JobSelected(Job? job)
+    {
+        if (job is not null)
+        {
+            navigationManager.NavigateTo($"/site-job/{job.Id}");
+        }
+    }
+}

@@ -5,7 +5,7 @@
     <div>
     @foreach (JobTask task in JobTasks)
     {
-        <TaskCard Task="@task" TaskDeleted="TaskDeleted"/>
+        <TaskCard Task="@task" TaskDeleted="TaskDeleted" HideControls="HideControls"/>
     }
     </div>
 }
@@ -17,6 +17,8 @@ else
 @code {
     [Parameter]
     public IEnumerable<JobTask> JobTasks { get; set; } = [];
+    [Parameter]
+    public bool HideControls { get; set; } = false;
     [Parameter]
     public EventCallback<IEnumerable<JobTask>> OnTimelineUpdate { get; set; }
 

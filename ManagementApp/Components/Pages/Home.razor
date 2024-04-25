@@ -30,6 +30,11 @@ else
         if (CurrentUser is null) {
             navigationManager.NavigateTo("/login");
         }
+        else if (CurrentUser.IsSiteWorker)
+        {
+            // Navigate to the site page if the user is a site worker
+            navigationManager.NavigateTo("/site");
+        }
         IsLoading = false;
     }
 }
