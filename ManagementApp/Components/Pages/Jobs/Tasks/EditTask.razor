@@ -3,6 +3,7 @@
 @inject NavigationManager navigationManager;
 @inject ITaskService taskService;
 @inject IUserService userService;
+@inject IJobService jobService;
 @inject ILogger<EditTask> logger;
 @rendermode @(new InteractiveServerRenderMode(false))
 
@@ -53,6 +54,10 @@ else
             </HxButton>
         </EditForm>
     }
+    else
+    {
+        <GeneralError/>
+    }
 }
 
 @code {
@@ -60,9 +65,11 @@ else
     public int? TaskId { get; set; }
     [Parameter]
     public int? JobId { get; set; }
-
     [Parameter]
-    public EventCallback OnTaskCreated { get; set; }
+    public bool DontRedirectOnSubmit { get; set; } = false;
+    [Parameter]
+    public EventCallback<JobTask> OnTaskCreated { get; set; }
+
 
     [SupplyParameterFromForm]
     public JobTask CurrentTask { get; set; } = new();
@@ -88,6 +95,32 @@ else
     {
         CurrentUser = await userService.GetCurrentUserAsync();
         await PopulateCurrentTask();
+        await CheckJobValidity();
+    }
+
+    // Method to check if the job exists and the user has access to it.
+    private async Task CheckJobValidity()
+    {
+        try
+        {
+            var job = await jobService.GetByIdAsync(JobId!.Value, CurrentUser!);
+            if (job is null)
+            {
+                // Logging handled in service layer
+                DontShowForm = true;
+            }
+        }
+        catch (ArgumentNullException)
+        {
+            // Logging is already handled in PopulateCurrentTask
+            DontShowForm = true;
+        }  
+        catch (UnauthorizedAccessException)
+        {
+            // Logging handled in service layer
+            Unauthorized = true;
+        }
+
     }
 
     private async Task PopulateCurrentTask()
@@ -173,8 +206,11 @@ else
 
         if (newTask is not null)
         {
-            navigationManager.NavigateTo($"/job/{JobId}");
-            await OnTaskCreated.InvokeAsync();
+            await OnTaskCreated.InvokeAsync(newTask);
+            if (!DontRedirectOnSubmit)
+            {
+                navigationManager.NavigateTo($"/job/{JobId}");
+            }
         }
         else
         {

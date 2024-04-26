@@ -3,7 +3,7 @@
 
 @if (Jobs.Count() > 0)
 {
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>
@@ -22,7 +22,7 @@
                         @job.Reference
                     </td>
                     <td>
-                        @job.Customer.Name
+                        @job.Customer?.Name
                     </td>
                 </tr>
             }

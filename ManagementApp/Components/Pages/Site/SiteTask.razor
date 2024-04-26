@@ -6,7 +6,20 @@
 
 @if (IsLoading == false && CurrentUser is not null && JobId is not null)
 {
-    <EditTask JobId="JobId"/>
+    <div class="bg-white rounded p-2">
+        @*Show create task form at first, then once created, show image upload*@
+        @if (CreatedTask is null)
+        {
+            <EditTask JobId="JobId" DontRedirectOnSubmit="true" OnTaskCreated="TaskCreated"/>
+        }
+        else {
+            @foreach(var taskImage in CreatedTask.Images)
+            {
+                <TaskImage JobTaskId="CreatedTask.Id" JobTaskImage="taskImage" />
+            }
+            <TaskImageUpload JobTaskId="CreatedTask.Id" OnImageUploaded="() => null" />
+        }
+    </div>
 }
 else if (IsLoading == false && JobId is null) 
 {
@@ -17,6 +30,8 @@ else if (IsLoading == false && JobId is null)
     [Parameter]
     public int? JobId { get; set; }
     public User? CurrentUser { get; set; }
+
+    public JobTask? CreatedTask = null;
 
     public bool IsLoading = true;
 
@@ -31,11 +46,8 @@ else if (IsLoading == false && JobId is null)
         IsLoading = false;
     }
 
-    public void JobSelected(Job? job)
+    public void TaskCreated(JobTask task)
     {
-        if (job is not null)
-        {
-            navigationManager.NavigateTo($"/site-job/{job.Id}");
-        }
+        CreatedTask = task;
     }
 }
