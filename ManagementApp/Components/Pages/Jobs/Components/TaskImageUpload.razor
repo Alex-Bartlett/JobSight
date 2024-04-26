@@ -41,7 +41,7 @@
             JobTaskId = JobTaskId.Value,
             Caption = "none"
         };
-        
+
         try
         {
             using (var memoryStream = new MemoryStream())
@@ -50,6 +50,7 @@
                 var res = await taskImageService.AddImage(jobTaskImage, memoryStream);
                 // Invoke the event callback with the new job task image
                 await OnImageUploaded.InvokeAsync(res);
+                ErrorMessage = string.Empty;
             }
         }
         catch (IOException)

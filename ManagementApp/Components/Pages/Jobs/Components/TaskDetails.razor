@@ -1,0 +1,15 @@
+﻿
+@if (Task is not null)
+{
+    <h3>Task</h3>
+<h4><span><b>Description: </b></span>@Task.Description</h4>
+<p><span><b>Start date: </b></span>@Task.StartDateTime</p>
+<p><span><b>End date: </b></span>@Task.EndDateTime</p>
+}
+else {
+    <p>Error getting task details.</p>
+}
+@code {
+    [Parameter]
+    public JobTask? Task { get; set; }
+}

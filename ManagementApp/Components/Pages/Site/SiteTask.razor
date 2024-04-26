@@ -13,11 +13,16 @@
             <EditTask JobId="JobId" DontRedirectOnSubmit="true" OnTaskCreated="TaskCreated"/>
         }
         else {
-            @foreach(var taskImage in CreatedTask.Images)
-            {
-                <TaskImage JobTaskId="CreatedTask.Id" JobTaskImage="taskImage" />
-            }
-            <TaskImageUpload JobTaskId="CreatedTask.Id" OnImageUploaded="() => null" />
+            <div class="d-flex">
+                
+            </div>
+            <div class="d-flex flex-row flex-wrap">
+                <TaskImageUpload JobTaskId="CreatedTask.Id" OnImageUploaded="() => StateHasChanged()" />
+                @foreach(var taskImage in CreatedTask.Images)
+                {
+                    <TaskImage JobTaskId="CreatedTask.Id" JobTaskImage="taskImage" />
+                }
+            </div>
         }
     </div>
 }
