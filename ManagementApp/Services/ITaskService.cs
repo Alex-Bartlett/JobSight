@@ -9,8 +9,8 @@ namespace ManagementApp.Services
         /// </summary>
         /// <param name="jobId"></param>
         /// <returns></returns>
-        Task<IEnumerable<JobTask>> GetAllAsync(int jobId);
-        Task<JobTask?> GetByIdAsync(int id, User user);
+        Task<IEnumerable<JobTask>> GetAllAsync(int jobId, bool refreshImageUrls = true);
+        Task<JobTask?> GetByIdAsync(int id, User user, bool refreshImageUrls = true);
         Task<JobTask?> CreateAsync(JobTask task);
         Task<JobTask?> UpdateAsync(JobTask task);
         Task DeleteAsync(int id, User user);

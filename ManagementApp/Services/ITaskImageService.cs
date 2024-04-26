@@ -11,5 +11,7 @@ namespace ManagementApp.Services
         /// <param name="imgStream">The file stream for the incoming image</param>
         /// <returns>The new task image object</returns>
         public Task<JobTaskImage?> AddImage(JobTaskImage jobTaskImage, MemoryStream imgStream);
+
+        public Task<IEnumerable<JobTaskImage>> RefreshImageUrls(IEnumerable<JobTaskImage> images, int companyId);
     }
 }

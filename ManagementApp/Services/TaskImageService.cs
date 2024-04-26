@@ -9,6 +9,7 @@ namespace ManagementApp.Services
         private readonly ITaskRepository _taskRepository;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
+        private readonly int _expirationTime;
 
         public TaskImageService(ITaskImageRepository taskImageRepository, ITaskRepository taskRepository, IConfiguration configuration, ILogger<TaskImageService> logger)
         {
@@ -16,6 +17,7 @@ namespace ManagementApp.Services
             _taskRepository = taskRepository;
             _configuration = configuration;
             _logger = logger;
+            _expirationTime = _configuration.GetValue<int>("ImageUploadConfig:UrlExpirationInMinutes");
         }
 
         public async Task<JobTaskImage?> AddImage(JobTaskImage jobTaskImage, MemoryStream imgStream)
@@ -30,9 +32,13 @@ namespace ManagementApp.Services
                 return null;
             }
 
-            var expirationTime = _configuration.GetValue<int>("ImageUploadConfig:UrlExpirationInMinutes");
-            var result = await _taskImageRepository.AddAsync(jobTaskImage, imgStream, companyId.Value, expirationTime);
+            var result = await _taskImageRepository.AddAsync(jobTaskImage, imgStream, companyId.Value, _expirationTime);
             return result;
+        }
+
+        public async Task<IEnumerable<JobTaskImage>> RefreshImageUrls(IEnumerable<JobTaskImage> images, int companyId)
+        {
+            return await _taskImageRepository.RefreshExpiredUrlsAsync(images, companyId, _expirationTime); 
         }
     }
 }

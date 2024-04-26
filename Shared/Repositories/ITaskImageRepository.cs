@@ -41,5 +41,6 @@ namespace Shared.Repositories
         /// <param name="companyId">The company ID for the task, used to locate the relevant bucket</param>
         Task DeleteAsync(int taskImageId, int companyId);
 
+        Task<IEnumerable<JobTaskImage>> RefreshExpiredUrlsAsync(IEnumerable<JobTaskImage> jobTaskImages, int companyId, int expirationInMinutes);
     }
 }

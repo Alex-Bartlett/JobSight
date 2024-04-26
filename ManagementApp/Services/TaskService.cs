@@ -9,13 +9,15 @@ namespace ManagementApp.Services
         private readonly ILogger _logger;
         private readonly IUserService _userService;
         private readonly IJobService _jobService;
+        private readonly ITaskImageService _taskImageService;
 
-        public TaskService(ITaskRepository taskRepository, ILogger<TaskService> logger, IUserService userService, IJobService jobService)
+        public TaskService(ITaskRepository taskRepository, ILogger<TaskService> logger, IUserService userService, IJobService jobService, ITaskImageService taskImageService)
         {
             _taskRepository = taskRepository;
             _logger = logger;
             _userService = userService;
             _jobService = jobService;
+            _taskImageService = taskImageService;
         }
 
         public async Task<JobTask?> CreateAsync(JobTask task)
@@ -51,13 +53,25 @@ namespace ManagementApp.Services
             await _taskRepository.DeleteAsync(entityToDelete.Id);
         }
 
-        public Task<IEnumerable<JobTask>> GetAllAsync(int jobId)
+        public async Task<IEnumerable<JobTask>> GetAllAsync(int jobId, bool refreshImageUrls = true)
         {
             // Worst case, this will return an empty list. No error handling is needed.
-            return _taskRepository.GetAllAsync(jobId);
+            var tasks = await _taskRepository.GetAllAsync(jobId);
+            if (refreshImageUrls)
+            {
+                var tasksArray = tasks.ToArray();
+                for (int i = 0; i < tasksArray.Length; i++)
+                {
+                    tasksArray[i] = await UpdateUrls(tasksArray[i]);
+                }
+                return tasksArray;
+            }
+            else {
+                return tasks;
+            }
         }
 
-        public async Task<JobTask?> GetByIdAsync(int taskId, User user)
+        public async Task<JobTask?> GetByIdAsync(int taskId, User user, bool refreshImageUrls = true)
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task is null)
@@ -75,7 +89,14 @@ namespace ManagementApp.Services
             // If authorization checks fail, an exception will be thrown. Task will not be returned.
             AccessValidation.CheckForAuthorizationViolations(task.Job.CompanyId.Value, user, _logger);
 
-            return task;
+            if (refreshImageUrls)
+            {
+                return await UpdateUrls(task);
+            }
+            else
+            {
+                return task;
+            }
         }
 
         public async Task<JobTask?> UpdateAsync(JobTask task)
@@ -100,6 +121,23 @@ namespace ManagementApp.Services
         {
             var user = await _userService.GetCurrentUserAsync();
             return AccessValidation.IsValid(task, user, _logger);
+        }
+
+        private async Task<JobTask> UpdateUrls(JobTask task) 
+        {
+            if (task.Images.Count == 0)
+            {
+                // Dont bother trying to update image urls if there are no images.
+                return task;
+            }
+            if (task.Job?.CompanyId is null)
+            {
+                _logger.LogWarning("Could not update image urls because task's job or company could not be found.", [task]);
+                return task;
+            }
+            var newImages = await _taskImageService.RefreshImageUrls(task.Images, task.Job.CompanyId.Value);
+            task.Images = newImages.ToList();
+            return task;
         }
     }
 }

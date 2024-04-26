@@ -53,11 +53,12 @@ namespace Shared.Repositories
 
         public async Task<IEnumerable<JobTask>> GetAllAsync(int jobId)
         {
-            return await _context.JobTasks
+            var tasks = await _context.JobTasks
                 .Where(task => task.JobId == jobId)
                 .Include(task => task.Images)
                 .Include(task => task.User)
                 .ToListAsync();
+            return tasks;
         }
 
         public async Task<JobTask?> GetByIdAsync(int id)

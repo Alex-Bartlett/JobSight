@@ -45,5 +45,28 @@ namespace Shared.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IEnumerable<JobTaskImage>> RefreshExpiredUrlsAsync(IEnumerable<JobTaskImage> jobTaskImages, int companyId, int expirationInMinutes)
+        {
+            // I feel conflicted on if this belongs here or in the service layer. This will do for now.
+            var expiredImageIds = jobTaskImages.Where(image => image.UrlExpiry < DateTime.UtcNow).Select(image => image.Id);
+            foreach (var image in jobTaskImages)
+            {
+                if (expiredImageIds.Contains(image.Id))
+                {
+                    var dbImage = await _context.JobTaskImages.FindAsync(image.Id);
+                    if (dbImage is null)
+                    {
+                        // Probably should log this. Not sure if it's worth throwing an exception.
+                        continue;
+                    }
+                    dbImage.ImageUrl = await _supabaseConnector.CreateSignedUrl(companyId, dbImage.ImageName!, expirationInMinutes); // Can't imagine ImageName will be null here. Might have to add a check later though just in case.
+                    dbImage.UrlExpiry = DateTime.UtcNow.AddMinutes(expirationInMinutes);
+                }
+            }
+            // Push the new URLs to the database
+            await _context.SaveChangesAsync();
+            return jobTaskImages;
+        }
     }
 }
