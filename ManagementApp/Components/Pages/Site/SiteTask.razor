@@ -10,7 +10,7 @@
         @*Show create task form at first, then once created, show image upload*@
         @if (CreatedTask is null)
         {
-            <EditTask JobId="JobId" DontRedirectOnSubmit="true" OnTaskCreated="TaskCreated"/>
+            <EditTask JobId="JobId" DontRedirectOnSubmit="true" OnTaskCreated="TaskCreated"/> @*Why does it think there's an error here? It works fine?*@
         }
         else {
             <div class="d-flex">

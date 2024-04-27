@@ -5,7 +5,7 @@
 @if (Task is not null && !deleted)
 {
     <div class="border rounded my-3 p-3">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between flex-wrap">
             <div class="rounded bg-primary text-white px-2 fw-bold" style="width: fit-content;">
                 @if (Task.User is not null && Task.User.UserName != string.Empty)
                 {
@@ -27,7 +27,7 @@
             <h5 class="mt-3">@Task.Description</h5>
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex flex-wrap">
             @if (Task.Images is not null) 
             {
                 @foreach (var jobTaskImage in Task.Images)

@@ -1,0 +1,19 @@
+﻿
+@if (TaskImage is not null)
+{
+    <div>
+        <img
+            src="@TaskImage.ImageUrl"
+            alt="@TaskImage.Caption"
+            class="img-fluid"/>
+    </div>
+}
+@code {
+    [Parameter]
+    public JobTaskImage? TaskImage { get; set; } = new()
+    {
+        ImageUrl = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.cameraegg.org%2Fwp-content%2Fuploads%2F2013%2F02%2FNikon-D7100-Sample-Image-s1.jpg&f=1&nofb=1&ipt=18804c1865f16d4b8ecdb038c85b7bf355ee1dd95b70869f9ac5262a3321e753&ipo=images",
+        Caption = "Placeholder"
+    };
+
+}
