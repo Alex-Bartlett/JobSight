@@ -1,8 +1,20 @@
 ﻿@inject ITaskImageService taskImageService;
 @inject IConfiguration configuration;
+@inject IJSRuntime JSRuntime;
 
-<InputFile OnChange="LoadFile" accept="@AllowedExtensions"/>
-<p class="text-danger">@ErrorMessage</p>
+<InputFile style="display:none;" @ref="filePicker" OnChange="LoadFile" accept="@AllowedExtensions" />
+
+<div class="upload m-1">
+    <button type="button" @onclick="OpenFilePicker">
+        <div class="d-flex flex-column align-items-center justify-items-center">
+            <i class="bi-cloud-arrow-up"></i>
+            <div class="button-text">Upload Image</div>
+
+        </div>
+    </button>
+    <p class="text-danger">@ErrorMessage</p>
+</div>
+
 
 @code {
     [Parameter]
@@ -10,6 +22,8 @@
 
     [Parameter]
     public EventCallback<JobTaskImage> OnImageUploaded { get; set; }
+
+    private InputFile filePicker;
 
     private long _maxFileSize = 0;
     public long MaxFileSize 
@@ -65,6 +79,9 @@
             ErrorMessage = $"Invalid file type. Allowed types: {AllowedExtensions}";
         }
     }
+
+    // Solution for styling the input file button by using a custom button https://stackoverflow.com/a/78360995
+    private async Task OpenFilePicker() => await JSRuntime.InvokeVoidAsync("HTMLElement.prototype.click.call", filePicker.Element);
 
 
 }

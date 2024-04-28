@@ -1,0 +1,40 @@
+﻿button {
+	border: none;
+	background: none;
+	height: 100%;
+	width: 100%;
+	color: rgba(0,0,0,0.5);
+}
+
+button:hover {
+	color: rgba(0,0,0,0.3);
+}
+
+.upload {
+	position: relative;
+	padding: 0.5rem;
+	font-size: 3rem;
+	background-color: #f5f5f5;
+	border-radius: var(--bs-border-radius);
+}
+
+.button-text {
+	font-size: 1.5rem;
+}
+p {
+	position: absolute;
+	bottom: -2.5em;
+	left: 0;
+	width: max-content;
+}
+
+i {
+	line-height: 0;
+}
+
+/* typical phone screen resolution */
+@media only screen and (max-width : 667px) {
+	.button-text {
+		font-size: 1.3rem;
+	}
+}

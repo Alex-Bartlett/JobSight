@@ -1,5 +1,5 @@
 ﻿
-<div class="js-task-image border border-secondary rounded mx-1 mb-1">
+<div class="js-task-image mx-1 my-1">
 
 @if (JobTaskImage is null)
 {
@@ -7,7 +7,9 @@
 }
 else
 {
-    <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption"/>
+        <div class="border rounded p-1">
+        <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption"/>
+    </div>
 }
 
 </div>

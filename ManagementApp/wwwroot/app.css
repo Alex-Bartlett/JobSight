@@ -49,3 +49,48 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+.js-task-image img, .js-task-image .upload {
+    width: 10rem;
+    height: 10rem;
+    object-fit: scale-down;
+    transition: transform 0.2s ease;
+}
+
+    .js-task-image img:hover {
+        transform: scale(0.9, 0.9);
+        cursor: pointer;
+    }
+
+    .js-task-image img:active {
+        transform: scale(0.95, 0.95);
+    }
+
+
+/* typical tablet screen resolution */
+@media only screen and (max-width : 834px) {
+    .js-task-image {
+        display: flex;
+        width: calc(33% - 0.5em);
+        margin-right: 0.5em;
+        margin-left: 0.5em;
+        overflow: hidden;
+    }
+
+    .js-task-image img, .js-task-image .upload {
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+/* typical phone screen resolution */
+@media only screen and (max-width : 667px) {
+    .js-task-image {
+        width: calc(50% - 0.5em);
+    }
+}
