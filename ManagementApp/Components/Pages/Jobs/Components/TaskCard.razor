@@ -56,7 +56,8 @@
     public bool HideControls { get; set; } = false;
     [Parameter]
     public EventCallback<int> TaskDeleted { get; set; }
-
+    [Parameter]
+    public EventCallback<JobTaskImage> OnImageClicked { get; set; }
     private bool deleted = false;
 
 

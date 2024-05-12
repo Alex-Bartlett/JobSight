@@ -2,9 +2,9 @@
 @inject IConfiguration configuration;
 @inject IJSRuntime JSRuntime;
 
-<InputFile style="display:none;" @ref="filePicker" OnChange="LoadFile" accept="@AllowedExtensions" />
+<InputFile style="display:block;" @ref="filePicker" OnChange="LoadFile" accept="@AllowedExtensions" />
 
-<div class="upload m-1">
+@* <div class="upload m-1">
     <button type="button" @onclick="OpenFilePicker">
         <div class="d-flex flex-column align-items-center justify-items-center">
             <i class="bi-cloud-arrow-up"></i>
@@ -13,7 +13,7 @@
         </div>
     </button>
     <p class="text-danger">@ErrorMessage</p>
-</div>
+</div> *@
 
 
 @code {

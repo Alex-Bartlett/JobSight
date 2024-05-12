@@ -1,11 +1,18 @@
 ﻿
 @if (TaskImage is not null)
 {
-    <div>
-        <img
-            src="@TaskImage.ImageUrl"
-            alt="@TaskImage.Caption"
-            class="img-fluid"/>
+    <div class="backdrop">
+        <div class="img-modal">
+            <div>
+                <div class="x">
+                    <i @onclick="CloseModal" class="bi-x-lg mb-2"/>
+                </div>
+                <img
+                    src="@TaskImage.ImageUrl"
+                    alt="@TaskImage.Caption"
+                    class="img-fluid modal-img"/>
+            </div>
+        </div>
     </div>
 }
 @code {
@@ -16,4 +23,11 @@
         Caption = "Placeholder"
     };
 
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    async Task CloseModal()
+    {
+        await OnClose.InvokeAsync();
+    }
 }

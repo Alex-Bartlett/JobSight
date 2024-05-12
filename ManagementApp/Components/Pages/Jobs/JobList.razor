@@ -15,7 +15,7 @@ else if (jobs.Count() == 0)
 }
 else
 {
-    <table>
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>
@@ -23,6 +23,9 @@ else
                 </th>
                 <th>
                     Reference
+                </th>
+                <th>
+                    Address
                 </th>
                 <th>
                     Customer
@@ -41,6 +44,9 @@ else
                 </td>
                 <td>
                     @job.Reference
+                </td>
+                <td>
+                    @job.Address
                 </td>
                 <td>
                     @job.Customer?.Name

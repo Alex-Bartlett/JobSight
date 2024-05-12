@@ -51,19 +51,19 @@ h1:focus {
 }
 
 
-.js-task-image img, .js-task-image .upload {
+.js-task-image img:not(.modal-img), .js-task-image .upload {
     width: 10rem;
     height: 10rem;
     object-fit: scale-down;
     transition: transform 0.2s ease;
 }
 
-    .js-task-image img:hover {
+    .js-task-image img:not(.modal-img):hover {
         transform: scale(0.9, 0.9);
         cursor: pointer;
     }
 
-    .js-task-image img:active {
+    .js-task-image img:not(.modal-img):active {
         transform: scale(0.95, 0.95);
     }
 
@@ -78,7 +78,7 @@ h1:focus {
         overflow: hidden;
     }
 
-    .js-task-image img, .js-task-image .upload {
+    .js-task-image img:not(.modal-img), .js-task-image .upload {
         align-items: center;
         justify-content: center;
         margin: auto;

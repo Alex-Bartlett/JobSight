@@ -7,9 +7,16 @@
 }
 else
 {
-        <div class="border rounded p-1">
-        <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption"/>
+    <div class="border rounded p-1">
+        <img src="@JobTaskImage.ImageUrl" alt="@JobTaskImage.Caption" @onclick="ImageClicked"/>
     </div>
+
+    @if (ShowModal)
+    {
+        <div>
+            <ImageModal TaskImage="JobTaskImage" OnClose="CloseModal"/>
+        </div>
+    }
 }
 
 </div>
@@ -19,9 +26,23 @@ else
     public JobTaskImage? JobTaskImage { get; set; }
     [Parameter]
     public int? JobTaskId { get; set; }
+    [Parameter]
+    public EventCallback<JobTaskImage> OnImageClicked { get; set; }
+
+    bool ShowModal = false;
 
     public void ImageUploaded(JobTaskImage image)
     {
         JobTaskImage = image;
+    }
+
+    void ImageClicked()
+    {
+        ShowModal = true;
+    }
+
+    void CloseModal()
+    {
+        ShowModal = false;
     }
 }

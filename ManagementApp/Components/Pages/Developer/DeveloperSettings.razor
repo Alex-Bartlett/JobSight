@@ -10,7 +10,6 @@
 
 @*Both AuthorizeView and EditForm have a default context of 'context'. It needs to be overridden to prevent ambiguity. https://stackoverflow.com/a/77385623*@
 <AuthorizeView Context="AuthContext">
-    @AuthContext.User.Identity?.Name;
     @if (AllCompanies is null)
     {
         <div>Loading companies...</div>
@@ -21,18 +20,30 @@
     }
     else
     {    
-        <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm">
-            <label for="currentCompany">Current Company</label>
-            <InputSelect @bind-Value="CurrentUser.CurrentCompanyId">
+        <div class="d-flex flex-column">
+            <div><b>User ID: </b>@CurrentUser.Id</div>
+            <div><b>Name: </b>@AuthContext.User.Identity?.Name</div>
+        </div>
+        <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm" class="gap-0 mt-3">
+            <label class="form-label" for="currentCompany">Current Company</label>
+            <InputSelect @bind-Value="CurrentUser.CurrentCompanyId" class="form-select">
                 @if (AllCompanies is not null)
                 {
+                    <option>-- Select an option --</option>
                     @foreach (Company company in AllCompanies)
                     {
-                        <option value="@company.Id">@company.Name</option>
+                        @if (CurrentUser.CurrentCompanyId == company.Id)
+                        {
+                            <option value="@company.Id" selected>@company.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@company.Id">@company.Name</option>
+                        }
                     }
                 }
             </InputSelect>
-            <button type="submit">Save</button>
+            <div class="mt-3"><button type="submit" class="btn btn-primary w-auto">Save</button></div>
         </EditForm>
     }
 </AuthorizeView>
@@ -48,7 +59,7 @@
         var user = await userService.GetCurrentUserAsync();
         if (user is not null)
         {
-            CurrentUser.Id ??= user.Id;
+            CurrentUser.Id = user.Id;
             CurrentUser.CurrentCompanyId ??= user.CurrentCompanyId;
         }
         AllCompanies = await companyService.GetAllAsync();
