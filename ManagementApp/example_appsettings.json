@@ -1,0 +1,21 @@
+{
+  "ConnectionStrings": {
+    "Development": "User Id=<<userId>>;Password=<<password>>;Server=<<server>>;Port=<<port>>;Database=<<db name>>;Include Error Detail=true;"
+  },
+  "Supabase": {
+    "Url": "<<supabase url goes here>>",
+    "Key": "<<supabase key goes here>>"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ImageUploadConfig": {
+    "MaxSizeInKb": 10240,
+    "AllowedExtensions": [ ".jpg", ".jpeg", ".png" ],
+    "UrlExpirationInMinutes": 60
+  }
+}

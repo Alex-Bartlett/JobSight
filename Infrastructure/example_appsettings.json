@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "Development": "User Id=postgres.eryacgameveaaufsfgvj;Password=arV0h4mD9mgOqS0F;Server=aws-0-eu-west-2.pooler.supabase.com;Port=5432;Database=postgres;"
+  }
+}
