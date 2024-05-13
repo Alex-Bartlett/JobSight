@@ -13,16 +13,15 @@
             <EditTask JobId="JobId" DontRedirectOnSubmit="true" OnTaskCreated="TaskCreated"/> @*Why does it think there's an error here? It works fine?*@
         }
         else {
-            <div class="d-flex">
-                
-            </div>
+            <h3>Upload Images</h3>
             <div class="d-flex flex-row flex-wrap">
-                <TaskImageUpload JobTaskId="CreatedTask.Id" OnImageUploaded="() => StateHasChanged()" />
                 @foreach(var taskImage in CreatedTask.Images)
                 {
                     <TaskImage JobTaskId="CreatedTask.Id" JobTaskImage="taskImage" />
                 }
+                <TaskImageUpload JobTaskId="CreatedTask.Id" OnImageUploaded="() => StateHasChanged()" />
             </div>
+            <a href="/site-job/@JobId" class="btn btn-primary mt-3 w-100">Submit</a>
         }
     </div>
 }
