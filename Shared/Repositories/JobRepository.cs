@@ -29,7 +29,9 @@ namespace Shared.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            await _context.Jobs
+                .Where(t => t.Id == id)
+                .ExecuteDeleteAsync();
         }
 
         public async Task<IEnumerable<Job>> GetAllAsync(int companyId)

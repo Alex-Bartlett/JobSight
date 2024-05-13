@@ -73,9 +73,9 @@ namespace ManagementApp.Services
             return updatedJob;
         }
 
-        public void DeleteAsync(int jobId)
+        public async Task DeleteAsync(int jobId)
         {
-            throw new NotImplementedException();
+            await _jobRepository.DeleteAsync(jobId);
         }
 
         private async Task<bool> IsValid(Job job)

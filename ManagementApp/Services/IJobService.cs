@@ -31,6 +31,6 @@ namespace ManagementApp.Services
         /// Deletes a job with a matching id and all associated tasks and notes.
         /// </summary>
         /// <param name="jobId">The id of the job to delete</param>
-        void DeleteAsync(int jobId);
+        Task DeleteAsync(int jobId);
     }
 }

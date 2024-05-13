@@ -38,7 +38,8 @@ else
         }
         else
         {
-            <HxButton @onclick="ShowAddTask" Color="ThemeColor.Primary">Add Task</HxButton>
+            <button @onclick="DeleteClicked" class="btn btn-danger d-block mb-2"><i class="bi-trash3 me-1"/>Delete Job</button>
+            <HxButton @onclick="ShowAddTask" Color="ThemeColor.Primary"><i class="bi-plus-lg me-1"/>Add a Task</HxButton>
 
             @if (AddTaskVisible)
             {
@@ -109,5 +110,12 @@ else
     {
         await LoadTasks();
         StateHasChanged();
+    }
+
+
+    void DeleteClicked()
+    {
+        jobService.DeleteAsync(Id!.Value);
+        navigationManager.NavigateTo("/jobs");
     }
 }
