@@ -14,7 +14,6 @@ Before you can create jobs, you first need to create at least one customer.
 2. Click create a customer.
 
 3. Fill out all appropriate fields, and click create.
-
 ![JobSight Setup Guide](https://alexbartlett.com/images/jobsight/jobsight2.png)
 
 ## Creating a Job
@@ -41,7 +40,8 @@ Create a job so that site workers can start adding tasks.
 
 1. From the job page, scroll to find the task you wish to add an image for.
 2. Click the Upload Image button.
-![JobSight Setup Guide](https://alexbartlett.com/images/jobsight/jobsight6.png)
+
+	![JobSight Setup Guide](https://alexbartlett.com/images/jobsight/jobsight6.png)
 3. Select the image to upload.
 
 ## Deleting a Task
@@ -58,3 +58,5 @@ Create a job so that site workers can start adding tasks.
 2. Find the job you wish to edit, and click Edit.
 3. Edit any fields that you wish to update.
 4. Click the Update button.
+
+[Go back](../README.md)
