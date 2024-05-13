@@ -1,7 +1,5 @@
 # JobSight
 
-![JobSight Poster](https://alexbartlett.com/images/jobsight/jobsight.png)
-
 ## Contents
 
 - [Overview](#overview)
@@ -9,6 +7,8 @@
 - [Getting Started](/Docs/GettingStarted.md)
 - [Solution Overview](#solution-overview)
 - [Libraries Used](#libaries-used)
+
+![JobSight Poster](https://alexbartlett.com/images/jobsight/jobsight.png)
 
 ## Overview
 
