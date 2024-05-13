@@ -2,6 +2,7 @@
 @inject ICompanyService companyService;
 @inject IUserService userService;
 @inject ILogger<DeveloperSettings> logger;
+@inject NavigationManager navigationManager;
 @rendermode InteractiveServer
 @attribute [Authorize]
 @attribute [StreamRendering]
@@ -23,6 +24,7 @@
         <div class="d-flex flex-column">
             <div><b>User ID: </b>@CurrentUser.Id</div>
             <div><b>Name: </b>@AuthContext.User.Identity?.Name</div>
+            <div><b>Current Company: </b>@CurrentUser.CurrentCompany?.Name</div>
         </div>
         <EditForm Model="CurrentUser" OnSubmit="HandleSubmitCurrentCompany" FormName="CompanyForm" class="gap-0 mt-3">
             <label class="form-label" for="currentCompany">Current Company</label>
@@ -43,6 +45,10 @@
                     }
                 }
             </InputSelect>
+            @if (ErrorChangingCompany)
+            {
+                <p class="text-danger m-0">Unable to set company. Does user belong to selected company?</p>
+            }
             <div class="mt-3"><button type="submit" class="btn btn-primary w-auto">Save</button></div>
         </EditForm>
     }
@@ -54,13 +60,16 @@
 
     public IEnumerable<Company>? AllCompanies;
 
+    bool ErrorChangingCompany = false;
+
     protected override async Task OnInitializedAsync()
     {
-        var user = await userService.GetCurrentUserAsync();
+        var user = await userService.GetCurrentUserWithNavigationsAsync();
         if (user is not null)
         {
             CurrentUser.Id = user.Id;
             CurrentUser.CurrentCompanyId ??= user.CurrentCompanyId;
+            CurrentUser.CurrentCompany = user.CurrentCompany;
         }
         AllCompanies = await companyService.GetAllAsync();
     }
@@ -75,9 +84,12 @@
             if (res is not null)
             {
                 // Success
+                // Reload the page https://stackoverflow.com/a/75747008/22966636
+                navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
                 return;
             }
         }
         // Fail
+        ErrorChangingCompany = true;
     }
 }
